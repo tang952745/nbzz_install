@@ -17,6 +17,8 @@ except:
     from tqdm import tqdm
 
 os.system("nbzz init")
+
+os.system("sed -i \"/swap_endpoint: /c\\swap_endpoint:  ws://120.76.247.190:8546 \"  /root/.nbzz/stagenet/config/config.yaml")
 #curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/master/nbzz_run.py | python3 -
 bee_con_path=Path("config.yaml")
 if not bee_con_path.exists():

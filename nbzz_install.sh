@@ -1,3 +1,5 @@
+
+#curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/master/nbzz_install.sh | bash -
 apt update -y
 apt upgrade -y
 
@@ -16,5 +18,3 @@ sh install.sh
 cd ..
 
 curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/master/nbzz_run.py | python3 -
-
-#curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/master/nbzz_install.sh | bash -
