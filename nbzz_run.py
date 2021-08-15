@@ -9,14 +9,14 @@ try:
     from tqdm import tqdm
 except:
     try:
-        os.system('pip3 install tqdm')
+        os.system('sudo pip3 install tqdm')
     except:
             print("tqdm install error ")
             exit(1)
     from tqdm import tqdm
 
 os.system("nbzz init")
-#curl  -fsSL ${scriptURL} | python3 -
+#curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/master/nbzz_run.py | python3 -
 bee_con_path=Path("config.yaml")
 if not bee_con_path.exists():
     print("路径错误,请移动到bee批量安装脚本的启动目录.")
