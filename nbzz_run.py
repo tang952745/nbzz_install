@@ -36,7 +36,7 @@ for i_bee_path in tqdm(bee_install_path.glob(".bee*")):
     if swarm_key.exists():
         print(f"install bee in {i_bee_path}")
         faucet(bee_passwd,str(swarm_key))
-        pledge(bee_passwd,str(swarm_key))
+        pledge(15,bee_passwd,str(swarm_key))
     else:
         print(i_bee_path ,"目录下不存在keys文件,检查是否安装")
 
