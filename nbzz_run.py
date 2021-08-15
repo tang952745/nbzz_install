@@ -2,7 +2,6 @@ try:
     from nbzz.cmds.pledge_funcs import faucet, pledge
 except:
     print("nbzz未安装,此脚本需要安装nbzz 然后 . ./activate")
-from csv import excel
 import yaml
 from pathlib import Path
 import os
