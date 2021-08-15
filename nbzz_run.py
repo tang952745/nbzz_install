@@ -2,6 +2,7 @@ try:
     from nbzz.cmds.pledge_funcs import faucet, pledge
 except:
     print("nbzz未安装,此脚本需要安装nbzz 然后 . ./activate")
+from csv import excel
 import yaml
 from pathlib import Path
 import os
@@ -35,8 +36,14 @@ for i_bee_path in tqdm(bee_install_path.glob(".bee*")):
     swarm_key=i_bee_path/"keys"/"swarm.key"
     if swarm_key.exists():
         print(f"install bee in {i_bee_path}")
-        faucet(bee_passwd,str(swarm_key))
-        pledge(15,bee_passwd,str(swarm_key))
+        try:
+            faucet(bee_passwd,str(swarm_key))
+        except: 
+            print(i_bee_path,"打水失败")
+        try:
+            pledge(15,bee_passwd,str(swarm_key))
+        except: 
+            print(i_bee_path,"质押并启动失败")
     else:
         print(i_bee_path ,"目录下不存在keys文件,检查是否安装")
 
