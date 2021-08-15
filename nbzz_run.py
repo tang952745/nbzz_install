@@ -9,7 +9,7 @@ try:
     from tqdm import tqdm
 except:
     try:
-        os.system('sudo pip3 install tqdm')
+        os.system('pip3 install tqdm')
     except:
             print("tqdm install error ")
             exit(1)
