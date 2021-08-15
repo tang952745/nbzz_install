@@ -29,5 +29,5 @@ if not bee_install_path.exists():
     print("bee未安装或者未成功启动")
     exit(1)
 
-for i_bee_path in tqdm(bee_install_path.glob("bee*")):
+for i_bee_path in tqdm(bee_install_path.glob(".bee*")):
     print(i_bee_path)
