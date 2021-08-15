@@ -32,7 +32,10 @@ if not bee_install_path.exists():
     exit(1)
 
 for i_bee_path in tqdm(bee_install_path.glob(".bee*")):
-    print(f"install bee in {i_bee_path}")
-    faucet(bee_passwd,i_bee_path)
-    pledge(bee_passwd,i_bee_path)
-    
+    if (i_bee_path/"keys").exists():
+        print(f"install bee in {i_bee_path}")
+        faucet(bee_passwd,str(i_bee_path))
+        pledge(bee_passwd,str(i_bee_path))
+    else:
+        print(i_bee_path ,"目录下不存在keys文件,检查是否安装")
+
