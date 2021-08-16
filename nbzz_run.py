@@ -52,8 +52,13 @@ class w3:
         balance=self.nbzz_contract.functions.balanceOf(self.address).call()
         return balance
     def pledge_banlance(self):
-        balance=self.nbzz_contract.functions.addressPledge(self.address).call()
-        return balance
+        for i in range(3):
+            try:
+                balance=self.nbzz_contract.functions.addressPledge(self.address).call()
+                return balance
+            except:
+                print("获取质押状态失败,重新尝试...")
+
 
 all_bee_path=[i for i in bee_install_path.glob(".bee*")]
 for i_bee_path in tqdm(all_bee_path):
