@@ -1,5 +1,7 @@
 try:
     from nbzz.cmds.pledge_funcs import faucet, pledge
+    from nbzz.util.bee_key import decrypt_privatekey_from_bee_keyfile
+    import eth_keyfile
 except:
     print("nbzz未安装,此脚本需要安装nbzz 然后 . ./activate")
 import yaml
@@ -18,7 +20,6 @@ except:
 os.system("nbzz init")
 
 os.system("sed -i \"/swap_endpoint: /c\\swap_endpoint:  ws://120.76.247.190:8546 \"  /root/.nbzz/stagenet/config/config.yaml")
-#curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/master/nbzz_run.py | python3 -
 bee_con_path=Path("config.yaml")
 if not bee_con_path.exists():
     print("路径错误,请移动到bee批量安装脚本的启动目录.")
@@ -38,6 +39,10 @@ for i_bee_path in tqdm(all_bee_path):
     swarm_key=i_bee_path/"keys"/"swarm.key"
     if swarm_key.exists():
         print(f"install bee in {i_bee_path}")
+
+        geth_address=eth_keyfile.load_keyfile(str(swarm_key))
+        print(geth_address)
+        exit(1)
         try:
             faucet(bee_passwd,str(swarm_key))
         except: 
