@@ -1,5 +1,6 @@
 try:
     from nbzz.cmds.pledge_funcs import faucet, pledge
+    from nbzz.cmds.start import start_cmd
     from nbzz.util.config import load_config
     import eth_keyfile
     from web3 import Web3
@@ -58,6 +59,13 @@ class w3:
                 return balance
             except:
                 print("获取质押状态失败,重新尝试...")
+    def nbzz_status(self):
+        for i in range(3):
+            try:
+                status=self.nbzz_contract.functions.nodeState(self.address).call()
+                return status[0]
+            except:
+                print("获取nbzz状态失败,重新尝试...")
 
 
 all_bee_path=[i for i in bee_install_path.glob(".bee*")]
@@ -66,21 +74,28 @@ for i_bee_path in tqdm(all_bee_path):
     if swarm_key.exists():
         geth_address=eth_keyfile.load_keyfile(str(swarm_key))["address"]
         eth_stat=w3(geth_address)
-        if eth_stat.pledge_banlance() >=15:
-            print(f"{i_bee_path} 已经完成质押并启动")
+
+        if eth_stat.nbzz_status() >=15:
+            print(f"{i_bee_path} 已经启动")
             continue
-        print(f"install bee in {i_bee_path}")
-
-        
-
+        if eth_stat.pledge_banlance() >=15:
+            print(f"{i_bee_path} 已经完成质押")
+            continue
+        else:
+            print(f"install bee in {i_bee_path}")
+            try:
+                faucet(bee_passwd,str(swarm_key))
+            except: 
+                print(i_bee_path,"打水失败")
+            try:
+                pledge(15,bee_passwd,str(swarm_key))
+            except: 
+                print(i_bee_path,"质押并启动失败")
         try:
-            faucet(bee_passwd,str(swarm_key))
+            start_cmd(None,bee_passwd,str(swarm_key))
         except: 
-            print(i_bee_path,"打水失败")
-        try:
-            pledge(15,bee_passwd,str(swarm_key))
-        except: 
-            print(i_bee_path,"质押并启动失败")
+            print(i_bee_path,"启动失败")
+
     else:
         print(i_bee_path ,"目录下不存在keys文件,检查是否安装")
 
