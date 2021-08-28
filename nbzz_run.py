@@ -80,7 +80,6 @@ for i_bee_path in tqdm(all_bee_path):
             continue
         if eth_stat.pledge_banlance() >=15:
             print(f"{i_bee_path} 已经完成质押")
-            continue
         else:
             print(f"install bee in {i_bee_path}")
             try:
@@ -93,6 +92,7 @@ for i_bee_path in tqdm(all_bee_path):
                 print(i_bee_path,"质押并启动失败")
         try:
             os.system(f"nbzz start -p {bee_passwd}  --bee-key-path {str(swarm_key)}")
+            print("")
             #start_cmd(None,bee_passwd,str(swarm_key))
         except: 
             print(i_bee_path,"启动失败")
