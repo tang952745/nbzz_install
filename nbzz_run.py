@@ -55,7 +55,7 @@ class w3:
     def pledge_banlance(self):
         for i in range(3):
             try:
-                balance=self.nbzz_contract.functions.addressPledge(self.address).call()
+                balance=self.nbzz_contract.functions.pledgeOf(self.address).call()
                 return balance
             except:
                 print("获取质押状态失败,重新尝试...")
