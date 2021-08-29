@@ -75,7 +75,7 @@ for i_bee_path in tqdm(all_bee_path):
         geth_address=eth_keyfile.load_keyfile(str(swarm_key))["address"]
         eth_stat=w3(geth_address)
 
-        if eth_stat.nbzz_status() >=15:
+        if eth_stat.nbzz_status():
             print(f"{i_bee_path} 已经启动")
             continue
         if eth_stat.pledge_banlance() >=15:
