@@ -33,8 +33,8 @@ def new_print(*args, **kwargs):
     except:
         old_print(*args, ** kwargs)
 # globaly replace print with new_print
-inspect.builtins.print = new_print
-
+#inspect.builtins.print = new_print
+print=new_print
 class nbzz_conract_check:
     def __init__(self,contract,address):
         #print(tx_receipt.blockNumber)
