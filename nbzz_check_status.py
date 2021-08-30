@@ -11,7 +11,15 @@ except:
 import yaml
 from pathlib import Path
 import os
-
+try:
+    from tqdm import tqdm
+except:
+    try:
+        os.system('pip3 install tqdm')
+    except:
+            print("tqdm install error ")
+            exit(1)
+    from tqdm import tqdm
 
 bee_con_path=Path("config.yaml")
 if not bee_con_path.exists():
@@ -43,7 +51,7 @@ class nbzz_conract_check:
                 balance=self.nbzz_contract.functions.pledgeOf(self.address).call()
                 return balance
             except:
-                print("获取质押状态失败,重新尝试...")
+                tqdm.write("获取质押状态失败,重新尝试...")
     def nbzz_status(self):
         for i in range(3):
             try:
@@ -70,8 +78,7 @@ for i_bee_path in all_bee_path:
     if swarm_key.exists():
         geth_address=eth_keyfile.load_keyfile(str(swarm_key))["address"]
         eth_stat=nbzz_conract_check(nbzz_contract,geth_address)
-        print(i_bee_path ,f'0x{geth_address}',eth_stat.nbzz_status())
-
+        tqdm.write(f"{i_bee_path} 0x{geth_address} {eth_stat.nbzz_status()}")
     else:
-        print(i_bee_path ,"目录下不存在keys文件,检查是否安装")
+        tqdm.write(f"{i_bee_path} 目录下不存在keys文件,检查是否安装")
 
