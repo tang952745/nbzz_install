@@ -24,7 +24,7 @@ except:
 
 os.system("nbzz init")
 
-os.system("sed -i \"/swap_endpoint: /c\\swap_endpoint:  ws://120.76.247.190:8546 \"  /root/.nbzz/stagenet1/config/config.yaml")
+os.system("sed -i \"/swap_endpoint: 'https://rpc.goerli.mudit.blog' /c\\swap_endpoint:  ws://120.76.247.190:8546 \"  /root/.nbzz/stagenet1/config/config.yaml")
 bee_con_path=Path("config.yaml")
 if not bee_con_path.exists():
     print("路径错误,请移动到bee批量安装脚本的启动目录.")
@@ -46,8 +46,7 @@ class w3:
         self.w3= Web3(Web3.WebsocketProvider("ws://120.76.247.190:8546"))
         config: Dict = load_config(DEFAULT_ROOT_PATH, "config.yaml")
         self.nbzz_contract = self.w3.eth.contract(address=config["network_overrides"]["constants"][config["selected_network"]]["CONTRACT"],abi=NBZZ_ABI)
-        
-
+    
         self.address=Web3.toChecksumAddress("0x"+address)
     def balanceOf(self):
         balance=self.nbzz_contract.functions.balanceOf(self.address).call()
