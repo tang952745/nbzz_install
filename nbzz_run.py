@@ -84,7 +84,8 @@ for i_bee_path in tqdm(all_bee_path):
     if swarm_key.exists():
         geth_address=eth_keyfile.load_keyfile(str(swarm_key))["address"]
         eth_stat=nbzz_conract_check(nbzz_contract,geth_address)
-
+        eth_balance=w3.eth.getBalance(geth_address)
+        print(f"0x{geth_address} 剩余余额 {eth_balance}")
         if eth_stat.nbzz_status():
             print(f"{i_bee_path} 已经启动")
             continue
@@ -92,10 +93,14 @@ for i_bee_path in tqdm(all_bee_path):
             print(f"{i_bee_path} 已经完成质押")
         else:
             print(f"install bee in {i_bee_path}")
-            try:
-                faucet(bee_passwd,str(swarm_key))
-            except: 
-                print(i_bee_path,"打水失败")
+            if eth_stat.pledge_banlance() <15:
+                try:
+                    faucet(bee_passwd,str(swarm_key))
+                except: 
+                    print(i_bee_path,"打水失败")
+                    continue
+            else:
+                print("nbzz余额充足")
             try:
                 pledge(15,bee_passwd,str(swarm_key))
             except: 
