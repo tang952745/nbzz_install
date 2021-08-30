@@ -23,12 +23,41 @@ except:
             exit(1)
     from tqdm import tqdm
 
+class nbzz_conract_check:
+    def __init__(self,contract,address):
+        #print(tx_receipt.blockNumber)
+        self.nbzz_contract = contract
+        self.address=address
+
+    def balanceOf(self):
+        balance=self.nbzz_contract.functions.balanceOf(self.address).call()
+        return balance
+
+    def pledge_banlance(self):
+        for i in range(3):
+            try:
+                balance=self.nbzz_contract.functions.pledgeOf(self.address).call()
+                return balance
+            except:
+                print("获取质押状态失败,重新尝试...")
+
+    def nbzz_status(self):
+        for i in range(3):
+            try:
+                status=self.nbzz_contract.functions.nodeState(self.address).call()
+                return status[0]
+            except:
+                print("获取nbzz状态失败,重新尝试...")
+
+#初始化nbzz
 os.system("nbzz init")
 
+#修改rpc
 env=os.environ
 if "NBZZ_RPC" in env:
     os.system(f"sed -i \"/swap_endpoint:  /c\\swap_endpoint:  {env['NBZZ_RPC']} \"  /root/.nbzz/stagenet1/config/config.yaml")
 
+#读取createbee配置
 bee_con_path=Path("config.yaml")
 if not bee_con_path.exists():
     print("路径错误,请移动到bee批量安装脚本的启动目录.")
@@ -43,31 +72,7 @@ if not bee_install_path.exists():
     print("bee未安装或者未成功启动")
     exit(1)
 
-
-class nbzz_conract_check:
-    def __init__(self,contract,address):
-        #print(tx_receipt.blockNumber)
-        self.nbzz_contract = contract
-        self.address=address
-
-    def balanceOf(self):
-        balance=self.nbzz_contract.functions.balanceOf(self.address).call()
-        return balance
-    def pledge_banlance(self):
-        for i in range(3):
-            try:
-                balance=self.nbzz_contract.functions.pledgeOf(self.address).call()
-                return balance
-            except:
-                print("获取质押状态失败,重新尝试...")
-    def nbzz_status(self):
-        for i in range(3):
-            try:
-                status=self.nbzz_contract.functions.nodeState(self.address).call()
-                return status[0]
-            except:
-                print("获取nbzz状态失败,重新尝试...")
-
+#读取合约
 config: Dict = load_config(DEFAULT_ROOT_PATH, "config.yaml")
 
 swap_url=config["swap_endpoint"]
@@ -78,6 +83,7 @@ elif "ws" ==swap_url[:2]:
 
 nbzz_contract = w3.eth.contract(address=config["network_overrides"]["constants"][config["selected_network"]]["CONTRACT"],abi=NBZZ_ABI)
 
+#开始部署
 all_bee_path=[i for i in bee_install_path.glob(".bee*")]
 for i_bee_path in tqdm(all_bee_path,ncols=80):
     swarm_key=i_bee_path/"keys"/"swarm.key"
@@ -91,14 +97,17 @@ for i_bee_path in tqdm(all_bee_path,ncols=80):
         if eth_balance<0.002:
             tqdm.write(f"{i_bee_path} {geth_address} geth不足,目前余额: {eth_balance:.4f}")
             continue
+
         if eth_stat.nbzz_status():
             tqdm.write(f"{i_bee_path} 已经启动")
             continue
+
         if eth_stat.pledge_banlance() >=15:
             tqdm.write(f"{i_bee_path} 已经完成质押")
         else:
+
             tqdm.write(f"install bee in {i_bee_path}")
-            if eth_stat.pledge_banlance() <15:
+            if eth_stat.balanceOf() <15:
                 try:
                     faucet(bee_passwd,str(swarm_key))
                 except: 
@@ -111,6 +120,8 @@ for i_bee_path in tqdm(all_bee_path,ncols=80):
             except: 
                 tqdm.write(f"{i_bee_path} 质押失败")
                 continue
+
+            
         try:
             os.system(f"nbzz start -p {bee_passwd}  --bee-key-path {str(swarm_key)}")
             tqdm.write("")
