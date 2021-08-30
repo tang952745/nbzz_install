@@ -9,6 +9,7 @@ try:
     from nbzz.util.nbzz_abi import NBZZ_ABI
 except:
     print("nbzz未安装,此脚本需要安装nbzz 然后 . ./activate")
+    exit(1)
 import yaml
 from pathlib import Path
 import os
