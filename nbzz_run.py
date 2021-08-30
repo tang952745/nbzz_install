@@ -44,11 +44,18 @@ if not bee_install_path.exists():
 
 
 class w3:
-    def __init__(self,address):
+    def __init__(self,contract,address):
         #print(tx_receipt.blockNumber)
-        self.w3= Web3(Web3.WebsocketProvider("ws://120.76.247.190:8546"))
+        
         config: Dict = load_config(DEFAULT_ROOT_PATH, "config.yaml")
-        self.nbzz_contract = self.w3.eth.contract(address=config["network_overrides"]["constants"][config["selected_network"]]["CONTRACT"],abi=NBZZ_ABI)
+
+        swap_url=config["swap_endpoint"]
+        if "http" ==swap_url[:4]:
+            self.w3=Web3(Web3.HTTPProvider(swap_url))
+        elif "ws" ==swap_url[:2]:
+            self.w3=Web3(Web3.WebsocketProvider(swap_url))
+
+        self.nbzz_contract = contract
     
         self.address=Web3.toChecksumAddress("0x"+address)
     def balanceOf(self):
@@ -69,13 +76,22 @@ class w3:
             except:
                 print("获取nbzz状态失败,重新尝试...")
 
+config: Dict = load_config(DEFAULT_ROOT_PATH, "config.yaml")
+
+swap_url=config["swap_endpoint"]
+if "http" ==swap_url[:4]:
+    w3=Web3(Web3.HTTPProvider(swap_url))
+elif "ws" ==swap_url[:2]:
+    w3=Web3(Web3.WebsocketProvider(swap_url))
+
+nbzz_contract = w3.eth.contract(address=config["network_overrides"]["constants"][config["selected_network"]]["CONTRACT"],abi=NBZZ_ABI)
 
 all_bee_path=[i for i in bee_install_path.glob(".bee*")]
 for i_bee_path in tqdm(all_bee_path):
     swarm_key=i_bee_path/"keys"/"swarm.key"
     if swarm_key.exists():
         geth_address=eth_keyfile.load_keyfile(str(swarm_key))["address"]
-        eth_stat=w3(geth_address)
+        eth_stat=w3(nbzz_contract,geth_address)
 
         if eth_stat.nbzz_status():
             print(f"{i_bee_path} 已经启动")
