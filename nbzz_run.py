@@ -7,6 +7,7 @@ try:
     from typing import Dict
     from nbzz.util.default_root import DEFAULT_ROOT_PATH
     from nbzz.util.nbzz_abi import NBZZ_ABI
+    import inspect
 except:
     print("nbzz未安装,此脚本需要安装nbzz 然后 . ./activate")
     exit(1)
@@ -22,6 +23,17 @@ except:
             print("tqdm install error ")
             exit(1)
     from tqdm import tqdm
+
+# store builtin print
+old_print = print
+def new_print(*args, **kwargs):
+    # if tqdm.tqdm.write raises error, use builtin print
+    try:
+        tqdm.tqdm.write(*args, **kwargs)
+    except:
+        old_print(*args, ** kwargs)
+# globaly replace print with new_print
+inspect.builtins.print = new_print
 
 class nbzz_conract_check:
     def __init__(self,contract,address):
