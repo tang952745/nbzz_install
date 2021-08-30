@@ -48,7 +48,7 @@ class nbzz_conract_check:
     def __init__(self,contract,address):
         #print(tx_receipt.blockNumber)
         self.nbzz_contract = contract
-        self.address=Web3.toChecksumAddress("0x"+address)
+        self.address=address
 
     def balanceOf(self):
         balance=self.nbzz_contract.functions.balanceOf(self.address).call()
@@ -83,6 +83,8 @@ for i_bee_path in tqdm(all_bee_path):
     swarm_key=i_bee_path/"keys"/"swarm.key"
     if swarm_key.exists():
         geth_address=eth_keyfile.load_keyfile(str(swarm_key))["address"]
+        geth_address=Web3.toChecksumAddress("0x"+geth_address)
+
         eth_stat=nbzz_conract_check(nbzz_contract,geth_address)
         eth_balance=w3.eth.getBalance(geth_address)
         print(f"0x{geth_address} 剩余余额 {eth_balance}")
