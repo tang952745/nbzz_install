@@ -89,35 +89,35 @@ for i_bee_path in tqdm(all_bee_path,ncols=80):
         eth_balance=w3.eth.getBalance(geth_address)/1e18
         
         if eth_balance<0.002:
-            print(f"{i_bee_path} {geth_address} geth不足,目前余额: {eth_balance:.4f}")
+            tqdm.write(f"{i_bee_path} {geth_address} geth不足,目前余额: {eth_balance:.4f}")
             continue
         if eth_stat.nbzz_status():
-            print(f"{i_bee_path} 已经启动")
+            tqdm.write(f"{i_bee_path} 已经启动")
             continue
         if eth_stat.pledge_banlance() >=15:
-            print(f"{i_bee_path} 已经完成质押")
+            tqdm.write(f"{i_bee_path} 已经完成质押")
         else:
-            print(f"install bee in {i_bee_path}")
+            tqdm.write(f"install bee in {i_bee_path}")
             if eth_stat.pledge_banlance() <15:
                 try:
                     faucet(bee_passwd,str(swarm_key))
                 except: 
-                    print(i_bee_path,"打水失败")
+                    tqdm.write(f"{i_bee_path} 打水失败")
                     continue
             else:
-                print("nbzz余额充足")
+                tqdm.write("nbzz余额充足")
             try:
                 pledge(15,bee_passwd,str(swarm_key))
             except: 
-                print(i_bee_path,"质押失败")
+                tqdm.write(f"{i_bee_path} 质押失败")
                 continue
         try:
             os.system(f"nbzz start -p {bee_passwd}  --bee-key-path {str(swarm_key)}")
-            print("")
+            tqdm.write("")
             #start_cmd(None,bee_passwd,str(swarm_key))
         except: 
-            print(i_bee_path,"启动失败")
+            tqdm.write(f"{i_bee_path} 启动失败")
 
     else:
-        print(i_bee_path ,"目录下不存在keys文件,检查是否安装")
+        tqdm.write(f"{i_bee_path} 目录下不存在keys文件,检查是否安装")
 
