@@ -87,9 +87,9 @@ for i_bee_path in tqdm(all_bee_path):
 
         eth_stat=nbzz_conract_check(nbzz_contract,geth_address)
         eth_balance=w3.eth.getBalance(geth_address)/1e18
-        print(f"{geth_address} 剩余余额 {eth_balance:.4f}")
+        
         if eth_balance<0.002:
-            print("geth 不足")
+            print(f"{geth_address} geth不足,目前余额: {eth_balance:.4f}")
             continue
         if eth_stat.nbzz_status():
             print(f"{i_bee_path} 已经启动")
