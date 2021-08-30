@@ -89,7 +89,7 @@ for i_bee_path in tqdm(all_bee_path,ncols=80):
         eth_balance=w3.eth.getBalance(geth_address)/1e18
         
         if eth_balance<0.002:
-            print(f"{geth_address} geth不足,目前余额: {eth_balance:.4f}")
+            print(f"{i_bee_path} {geth_address} geth不足,目前余额: {eth_balance:.4f}")
             continue
         if eth_stat.nbzz_status():
             print(f"{i_bee_path} 已经启动")
