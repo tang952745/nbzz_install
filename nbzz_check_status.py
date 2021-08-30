@@ -35,7 +35,7 @@ if not bee_install_path.exists():
     exit(1)
 
 
-class w3:
+class nbzz_conract_check:
     def __init__(self,contract,address):
         #print(tx_receipt.blockNumber)
         self.nbzz_contract = contract
@@ -76,7 +76,7 @@ for i_bee_path in tqdm(all_bee_path):
     swarm_key=i_bee_path/"keys"/"swarm.key"
     if swarm_key.exists():
         geth_address=eth_keyfile.load_keyfile(str(swarm_key))["address"]
-        eth_stat=w3(nbzz_contract,geth_address)
+        eth_stat=nbzz_conract_check(nbzz_contract,geth_address)
         print(i_bee_path ,geth_address,eth_stat.nbzz_status())
 
     else:
