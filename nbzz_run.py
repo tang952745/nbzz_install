@@ -99,7 +99,8 @@ for i_bee_path in tqdm(all_bee_path):
             try:
                 pledge(15,bee_passwd,str(swarm_key))
             except: 
-                print(i_bee_path,"质押并启动失败")
+                print(i_bee_path,"质押失败")
+                continue
         try:
             os.system(f"nbzz start -p {bee_passwd}  --bee-key-path {str(swarm_key)}")
             print("")
