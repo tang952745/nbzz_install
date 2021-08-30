@@ -46,18 +46,9 @@ if not bee_install_path.exists():
 class w3:
     def __init__(self,contract,address):
         #print(tx_receipt.blockNumber)
-        
-        config: Dict = load_config(DEFAULT_ROOT_PATH, "config.yaml")
-
-        swap_url=config["swap_endpoint"]
-        if "http" ==swap_url[:4]:
-            self.w3=Web3(Web3.HTTPProvider(swap_url))
-        elif "ws" ==swap_url[:2]:
-            self.w3=Web3(Web3.WebsocketProvider(swap_url))
-
         self.nbzz_contract = contract
-    
         self.address=Web3.toChecksumAddress("0x"+address)
+        
     def balanceOf(self):
         balance=self.nbzz_contract.functions.balanceOf(self.address).call()
         return balance
