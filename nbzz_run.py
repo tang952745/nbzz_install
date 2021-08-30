@@ -24,7 +24,10 @@ except:
 
 os.system("nbzz init")
 
-os.system("sed -i \"/swap_endpoint: 'https://rpc.goerli.mudit.blog' /c\\swap_endpoint:  ws://120.76.247.190:8546 \"  /root/.nbzz/stagenet1/config/config.yaml")
+env=os.environ
+if "NBZZ_RPC" in env:
+    os.system(f"sed -i \"/swap_endpoint:  /c\\swap_endpoint:  {env['NBZZ_RPC']} \"  /root/.nbzz/stagenet1/config/config.yaml")
+
 bee_con_path=Path("config.yaml")
 if not bee_con_path.exists():
     print("路径错误,请移动到bee批量安装脚本的启动目录.")
