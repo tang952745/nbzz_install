@@ -79,7 +79,7 @@ elif "ws" ==swap_url[:2]:
 nbzz_contract = w3.eth.contract(address=config["network_overrides"]["constants"][config["selected_network"]]["CONTRACT"],abi=NBZZ_ABI)
 
 all_bee_path=[i for i in bee_install_path.glob(".bee*")]
-for i_bee_path in tqdm(all_bee_path):
+for i_bee_path in tqdm(all_bee_path,ncols=80):
     swarm_key=i_bee_path/"keys"/"swarm.key"
     if swarm_key.exists():
         geth_address=eth_keyfile.load_keyfile(str(swarm_key))["address"]
