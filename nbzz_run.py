@@ -1,16 +1,4 @@
-try:
-    from nbzz.cmds.pledge_funcs import faucet, pledge
-    from nbzz.cmds.start import start_cmd
-    from nbzz.util.config import load_config
-    import eth_keyfile
-    from web3 import Web3
-    from typing import Dict
-    from nbzz.util.default_root import DEFAULT_ROOT_PATH
-    from nbzz.util.nbzz_abi import NBZZ_ABI
-    import inspect
-except:
-    print("nbzz未安装,此脚本需要安装nbzz 然后 . ./activate")
-    exit(1)
+import inspect
 import yaml
 from pathlib import Path
 import os
@@ -23,7 +11,6 @@ except:
             print("tqdm install error ")
             exit(1)
     from tqdm import tqdm
-
 # store builtin print
 old_print = print
 def new_print(*args, **kwargs):
@@ -33,8 +20,23 @@ def new_print(*args, **kwargs):
     except:
         old_print(*args, ** kwargs)
 # globaly replace print with new_print
-#inspect.builtins.print = new_print
-print=new_print
+inspect.builtins.print = new_print
+
+try:
+    from nbzz.cmds.pledge_funcs import faucet, pledge
+    from nbzz.cmds.start import start_cmd
+    from nbzz.util.config import load_config
+    import eth_keyfile
+    from web3 import Web3
+    from typing import Dict
+    from nbzz.util.default_root import DEFAULT_ROOT_PATH
+    from nbzz.util.nbzz_abi import NBZZ_ABI
+
+except:
+    print("nbzz未安装,此脚本需要安装nbzz 然后 . ./activate")
+    exit(1)
+
+#print=new_print
 class nbzz_conract_check:
     def __init__(self,contract,address):
         #print(tx_receipt.blockNumber)
