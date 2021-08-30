@@ -70,7 +70,7 @@ for i_bee_path in all_bee_path:
     if swarm_key.exists():
         geth_address=eth_keyfile.load_keyfile(str(swarm_key))["address"]
         eth_stat=nbzz_conract_check(nbzz_contract,geth_address)
-        print(i_bee_path ,geth_address,eth_stat.nbzz_status())
+        print(i_bee_path ,f'0x{geth_address}',eth_stat.nbzz_status())
 
     else:
         print(i_bee_path ,"目录下不存在keys文件,检查是否安装")
