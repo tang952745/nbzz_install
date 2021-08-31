@@ -35,7 +35,8 @@ try:
 except:
     print("nbzz未安装,此脚本需要安装nbzz 然后 . ./activate")
     exit(1)
-
+print("in dev")
+exit( 0)
 #print=new_print
 class nbzz_conract_check:
     def __init__(self,contract,address):
