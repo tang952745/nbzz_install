@@ -2,7 +2,6 @@ import inspect
 import yaml
 from pathlib import Path
 import threading
-import queue
 import os
 try:
     from tqdm import tqdm
@@ -39,51 +38,105 @@ except:
     exit(1)
 #print=new_print
 class nbzz_conract_check:
-    run_queue=queue.Queue(10)
+    check_semaphore=threading.Semaphore(10)
     def __init__(self,contract,address):
-        #print(tx_receipt.blockNumber)
         self.nbzz_contract = contract
         self.address=address
 
     def balanceOf(self):
         balance=0
         for i in range(3):
-            nbzz_conract_check.run_queue.put(1)
+            nbzz_conract_check.check_semaphore.acquire()
             try:
                 balance=self.nbzz_contract.functions.balanceOf(self.address).call()
                 continue
             except:
                 print("获取余额失败,重新尝试...")
             finally:
-                nbzz_conract_check.run_queue.get()
+                nbzz_conract_check.check_semaphore.release()
         return balance
         
 
     def pledge_banlance(self):
         balance=0
         for i in range(3):
-            nbzz_conract_check.run_queue.put(1)
+            nbzz_conract_check.check_semaphore.acquire()
             try:
                 balance=self.nbzz_contract.functions.pledgeOf(self.address).call()
                 continue
             except:
                 print("获取质押状态失败,重新尝试...")
             finally:
-                nbzz_conract_check.run_queue.get()
+                nbzz_conract_check.check_semaphore.release()
         return balance
     def nbzz_status(self):
         status=False
         for i in range(3):
-            nbzz_conract_check.run_queue.put(1)
+            nbzz_conract_check.check_semaphore.acquire()
             try:
                 status=(self.nbzz_contract.functions.nodeState(self.address).call())[0]
             except:
                 print("获取nbzz状态失败,重新尝试...")
             finally:
-                nbzz_conract_check.run_queue.get()
+                nbzz_conract_check.check_semaphore.release()
         return status
 
+def i_thread_nbzz(ii_bee_path):
+    swarm_key=ii_bee_path/"keys"/"swarm.key"
+    if swarm_key.exists():
+        geth_address=eth_keyfile.load_keyfile(str(swarm_key))["address"]
+        geth_address=Web3.toChecksumAddress("0x"+geth_address)
 
+        eth_stat=nbzz_conract_check(nbzz_contract,geth_address)
+        eth_balance=w3.eth.getBalance(geth_address)/1e18
+        
+        if eth_balance<0.002:
+            tqdm.write(f"{ii_bee_path} {geth_address} geth不足,目前余额: {eth_balance:.4f}")
+            return
+
+        if eth_stat.nbzz_status():
+            tqdm.write(f"{ii_bee_path} 已经启动")
+            return
+
+        if eth_stat.pledge_banlance() >=15:
+            tqdm.write(f"{ii_bee_path} 已经完成质押")
+        else:
+            tqdm.write(f"install bee in {ii_bee_path}")
+            if eth_stat.balanceOf() <15:
+                run_semaphore.acquire()
+                try:
+                    faucet(bee_passwd,str(swarm_key))
+                except: 
+                    tqdm.write(f"{ii_bee_path} 打水失败")
+                    return
+                finally:
+                    run_semaphore.release()
+            else:
+                tqdm.write("nbzz余额充足")
+            run_semaphore.acquire()
+            try:
+                pledge(15,bee_passwd,str(swarm_key))
+            except: 
+                tqdm.write(f"{ii_bee_path} 质押失败")
+                return
+            finally:
+                run_semaphore.release()
+
+        run_semaphore.acquire()
+        try:
+            os.system(f"nbzz start -p {bee_passwd}  --bee-key-path {str(swarm_key)}")
+            tqdm.write("")
+            #start_cmd(None,bee_passwd,str(swarm_key))
+        except: 
+            tqdm.write(f"{ii_bee_path} 启动失败")
+        finally:
+            run_semaphore.release()
+
+    else:
+        tqdm.write(f"{ii_bee_path} 目录下不存在keys文件,检查是否安装")
+
+
+run_semaphore=threading.Semaphore(1)
 #初始化nbzz
 os.system("nbzz init")
 
@@ -121,49 +174,6 @@ nbzz_contract = w3.eth.contract(address=config["network_overrides"]["constants"]
 #开始部署
 all_bee_path=[i for i in bee_install_path.glob(".bee*")]
 for i_bee_path in tqdm(all_bee_path,ncols=80):
-    swarm_key=i_bee_path/"keys"/"swarm.key"
-    if swarm_key.exists():
-        geth_address=eth_keyfile.load_keyfile(str(swarm_key))["address"]
-        geth_address=Web3.toChecksumAddress("0x"+geth_address)
-
-        eth_stat=nbzz_conract_check(nbzz_contract,geth_address)
-        eth_balance=w3.eth.getBalance(geth_address)/1e18
-        
-        if eth_balance<0.002:
-            tqdm.write(f"{i_bee_path} {geth_address} geth不足,目前余额: {eth_balance:.4f}")
-            continue
-
-        if eth_stat.nbzz_status():
-            tqdm.write(f"{i_bee_path} 已经启动")
-            continue
-
-        if eth_stat.pledge_banlance() >=15:
-            tqdm.write(f"{i_bee_path} 已经完成质押")
-        else:
-
-            tqdm.write(f"install bee in {i_bee_path}")
-            if eth_stat.balanceOf() <15:
-                try:
-                    faucet(bee_passwd,str(swarm_key))
-                except: 
-                    tqdm.write(f"{i_bee_path} 打水失败")
-                    continue
-            else:
-                tqdm.write("nbzz余额充足")
-            try:
-                pledge(15,bee_passwd,str(swarm_key))
-            except: 
-                tqdm.write(f"{i_bee_path} 质押失败")
-                continue
-
-            
-        try:
-            os.system(f"nbzz start -p {bee_passwd}  --bee-key-path {str(swarm_key)}")
-            tqdm.write("")
-            #start_cmd(None,bee_passwd,str(swarm_key))
-        except: 
-            tqdm.write(f"{i_bee_path} 启动失败")
-
-    else:
-        tqdm.write(f"{i_bee_path} 目录下不存在keys文件,检查是否安装")
-
+    ithread=threading.Thread(target=i_thread_nbzz,args=(i_bee_path,))
+    ithread.setDaemon(True)
+    ithread.start()
