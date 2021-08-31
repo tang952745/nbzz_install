@@ -1,7 +1,7 @@
-#curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/master/nbzz_install.sh | bash -
+#curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/master/nbzz_install.sh | bash
 #dev curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/dev/nbzz_install.sh  | xargs bash  dev 
 echo $1
-exit(0)
+exit 0
 apt update -y
 apt upgrade -y
 
@@ -18,5 +18,7 @@ sh install.sh
 . ./activate
 
 cd ..
-
-curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/master/nbzz_run.py | python3 -
+if  [ $# == 0 ] ; then
+curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/master/nbzz_run.py | python3
+else
+curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/dev/nbzz_run.py | python3
