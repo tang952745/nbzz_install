@@ -1,6 +1,6 @@
 #curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/master/nbzz_install.sh | bash -
-#dev curl  -fsSL https://gitee.com/tousang/nbzz_install/blob/dev/nbzz_install.sh  | bash - dev
-echo $1
+#dev curl  -fsSL https://gitee.com/tousang/nbzz_install/blob/dev/nbzz_install.sh  | bash -
+echo dev
 exit(1)
 apt update -y
 apt upgrade -y
