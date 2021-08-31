@@ -175,5 +175,5 @@ nbzz_contract = w3.eth.contract(address=config["network_overrides"]["constants"]
 all_bee_path=[i for i in bee_install_path.glob(".bee*")]
 for i_bee_path in tqdm(all_bee_path,ncols=80):
     ithread=threading.Thread(target=i_thread_nbzz,args=(i_bee_path,))
-    ithread.setDaemon(True)
+    #ithread.setDaemon(True)
     ithread.start()
