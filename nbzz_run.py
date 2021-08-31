@@ -1,6 +1,8 @@
 import inspect
 import yaml
 from pathlib import Path
+import threading
+import queue
 import os
 try:
     from tqdm import tqdm
@@ -35,34 +37,52 @@ try:
 except:
     print("nbzz未安装,此脚本需要安装nbzz 然后 . ./activate")
     exit(1)
-print("in dev")
-exit( 0)
 #print=new_print
 class nbzz_conract_check:
+    run_queue=queue.Queue(10)
     def __init__(self,contract,address):
         #print(tx_receipt.blockNumber)
         self.nbzz_contract = contract
         self.address=address
 
     def balanceOf(self):
-        balance=self.nbzz_contract.functions.balanceOf(self.address).call()
+        balance=0
+        for i in range(3):
+            nbzz_conract_check.run_queue.put(1)
+            try:
+                balance=self.nbzz_contract.functions.balanceOf(self.address).call()
+                continue
+            except:
+                print("获取余额失败,重新尝试...")
+            finally:
+                nbzz_conract_check.run_queue.get()
         return balance
+        
 
     def pledge_banlance(self):
+        balance=0
         for i in range(3):
+            nbzz_conract_check.run_queue.put(1)
             try:
                 balance=self.nbzz_contract.functions.pledgeOf(self.address).call()
-                return balance
+                continue
             except:
                 print("获取质押状态失败,重新尝试...")
-
+            finally:
+                nbzz_conract_check.run_queue.get()
+        return balance
     def nbzz_status(self):
+        status=False
         for i in range(3):
+            nbzz_conract_check.run_queue.put(1)
             try:
-                status=self.nbzz_contract.functions.nodeState(self.address).call()
-                return status[0]
+                status=(self.nbzz_contract.functions.nodeState(self.address).call())[0]
             except:
                 print("获取nbzz状态失败,重新尝试...")
+            finally:
+                nbzz_conract_check.run_queue.get()
+        return status
+
 
 #初始化nbzz
 os.system("nbzz init")
