@@ -100,36 +100,30 @@ def i_thread_nbzz(ii_bee_path):
     else:
         tqdm.write(f"install bee in {ii_bee_path}")
         if eth_stat.balanceOf() < 15:
-            run_semaphore.acquire()
-            try:
-                faucet(bee_passwd, str(swarm_key))
-            except:
-                tqdm.write(f"{ii_bee_path} 打水失败")
-                return
-            finally:
-                run_semaphore.release()
+            with run_semaphore:
+                try:
+                    faucet(bee_passwd, str(swarm_key))
+                except:
+                    tqdm.write(f"{ii_bee_path} 打水失败")
+                    return
+
         else:
             tqdm.write("nbzz余额充足")
-        run_semaphore.acquire()
+        with run_semaphore:
+            try:
+                pledge(15, bee_passwd, str(swarm_key))
+            except:
+                tqdm.write(f"{ii_bee_path} 质押失败")
+                return
+
+    with run_semaphore:
         try:
-            pledge(15, bee_passwd, str(swarm_key))
+            os.system(
+                f"nbzz start -p {bee_passwd}  --bee-key-path {str(swarm_key)}")
+            tqdm.write("")
+            # start_cmd(None,bee_passwd,str(swarm_key))
         except:
-            tqdm.write(f"{ii_bee_path} 质押失败")
-            return
-        finally:
-            run_semaphore.release()
-
-    run_semaphore.acquire()
-    try:
-        os.system(
-            f"nbzz start -p {bee_passwd}  --bee-key-path {str(swarm_key)}")
-        tqdm.write("")
-        # start_cmd(None,bee_passwd,str(swarm_key))
-    except:
-        tqdm.write(f"{ii_bee_path} 启动失败")
-    finally:
-        run_semaphore.release()
-
+            tqdm.write(f"{ii_bee_path} 启动失败")
 
 run_semaphore = threading.Semaphore(1)
 # 初始化nbzz
