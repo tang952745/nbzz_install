@@ -3,7 +3,7 @@ import yaml
 from pathlib import Path
 import threading
 import os
-
+import time
 try:
     from nbzz.util.config import load_config
     import eth_keyfile
@@ -17,18 +17,26 @@ except:
 
 class nbzz_conract_check:
     check_semaphore = threading.Semaphore(10)
-
+    check_freq_lock=threading.Lock()
     def __init__(self, contract, address):
         self.nbzz_contract = contract
         self.address = address
+    def freq_lock_acquire(self):
+        def release_lock(w_time):
+            time.sleep(w_time)
+            nbzz_conract_check.check_freq_lock.release()
+    
+        nbzz_conract_check.check_freq_lock.acquire()
+        release_lock(0.1)
 
     def _contract_function(self, con_func, args, try_time=3, error_meesage="func error"):
         for i in range(try_time):
-            with nbzz_conract_check.check_semaphore:
-                try:
-                    return con_func(*args)
-                except Exception as ex:
-                    pass
+            #with nbzz_conract_check.check_semaphore:
+            self.freq_lock_acquire()
+            try:
+                return con_func(*args)
+            except Exception as ex:
+                pass
         print(error_meesage)
 
     def balanceOf(self):
