@@ -16,7 +16,7 @@ except:
     exit(1)
 
 class nbzz_conract_check:
-    check_semaphore = threading.Semaphore(1)
+    check_lock = threading.Lock()#threading.Semaphore(1)
     check_freq_lock=threading.Lock()
     def __init__(self, contract, address):
         self.nbzz_contract = contract
@@ -31,8 +31,8 @@ class nbzz_conract_check:
 
     def _contract_function(self, con_func, args, try_time=3, error_meesage="func error"):
         for i in range(try_time):
-            with nbzz_conract_check.check_semaphore:
-                self.freq_lock_acquire()
+            with nbzz_conract_check.check_lock:
+                #self.freq_lock_acquire()
                 try:
                     return con_func(*args)
                 except Exception as ex:
