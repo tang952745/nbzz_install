@@ -38,11 +38,12 @@ except:
     exit(1)
 #print=new_print
 class nbzz_conract_check:
-    check_semaphore=threading.Semaphore(1)
+    check_semaphore=threading.Semaphore(5)
     def __init__(self,contract,address):
         self.nbzz_contract = contract
         self.address=address
-
+    def _contract_function(func,args):
+        pass
     def balanceOf(self):
         balance=0
         for i in range(3):
