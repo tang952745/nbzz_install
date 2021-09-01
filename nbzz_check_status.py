@@ -27,7 +27,8 @@ class nbzz_conract_check:
             with nbzz_conract_check.check_semaphore:
                 try:
                     return con_func(*args)
-                except:
+                except Exception as ex:
+                    print(ex)
                     pass
         print(error_meesage)
 
