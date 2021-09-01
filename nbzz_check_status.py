@@ -51,6 +51,8 @@ def nbzz_status_ithread(i_bee_path):
     swarm_key=i_bee_path/"keys"/"swarm.key"
     if swarm_key.exists():
         geth_address=eth_keyfile.load_keyfile(str(swarm_key))["address"]
+        geth_address = Web3.toChecksumAddress("0x"+geth_address)
+        
         eth_stat=nbzz_conract_check(nbzz_contract,geth_address)
         print(f"{i_bee_path} 0x{geth_address} {eth_stat.nbzz_status()}")
     else:
