@@ -27,7 +27,7 @@ class nbzz_conract_check:
             nbzz_conract_check.check_freq_lock.release()
     
         nbzz_conract_check.check_freq_lock.acquire()
-        threading.Thread(target=release_lock,args=(0.15,)).start()
+        threading.Thread(target=release_lock,args=(0.05,)).start()
 
     def _contract_function(self, con_func, args, try_time=3, error_meesage="func error"):
         for i in range(try_time):
