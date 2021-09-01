@@ -18,15 +18,8 @@ except:
 class nbzz_conract_check:
     check_semaphore = threading.Semaphore(10)
     check_freq_lock=threading.Lock()
-    def __init__(self, address):
-        swap_url=config["swap_endpoint"]
-        if "http" ==swap_url[:4]:
-            w3=Web3(Web3.HTTPProvider(swap_url))
-        elif "ws" ==swap_url[:2]:
-            w3=Web3(Web3.WebsocketProvider(swap_url))
-
-        nbzz_contract = w3.eth.contract(address=config["network_overrides"]["constants"][config["selected_network"]]["CONTRACT"],abi=NBZZ_ABI)
-        self.nbzz_contract = nbzz_contract
+    def __init__(self, contract, address):
+        self.nbzz_contract = contract
         self.address = address
     def freq_lock_acquire(self):
         def release_lock(w_time):
@@ -68,7 +61,7 @@ def nbzz_status_ithread(i_bee_path):
         geth_address=eth_keyfile.load_keyfile(str(swarm_key))["address"]
         geth_address = Web3.toChecksumAddress("0x"+geth_address)
 
-        eth_stat=nbzz_conract_check(geth_address)
+        eth_stat=nbzz_conract_check(nbzz_contract,geth_address)
         print(f"{i_bee_path} 0x{geth_address} {eth_stat.nbzz_status()}")
     else:
         print(f"{i_bee_path} 目录下不存在keys文件,检查是否安装")
@@ -88,6 +81,14 @@ if not bee_install_path.exists():
     exit(1)
 
 config: Dict = load_config(DEFAULT_ROOT_PATH, "config.yaml")
+
+swap_url=config["swap_endpoint"]
+if "http" ==swap_url[:4]:
+    w3=Web3(Web3.HTTPProvider(swap_url))
+elif "ws" ==swap_url[:2]:
+    w3=Web3(Web3.WebsocketProvider(swap_url))
+
+nbzz_contract = w3.eth.contract(address=config["network_overrides"]["constants"][config["selected_network"]]["CONTRACT"],abi=NBZZ_ABI)
 
 
 all_bee_path=[i for i in bee_install_path.glob(".bee*")]
