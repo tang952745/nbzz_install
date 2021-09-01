@@ -36,23 +36,24 @@ try:
 except:
     print("nbzz未安装,此脚本需要安装nbzz 然后 . ./activate")
     exit(1)
-#print=new_print
+
 class nbzz_conract_check:
     check_semaphore=threading.Semaphore(5)
+
     def __init__(self,contract,address):
         self.nbzz_contract = contract
         self.address=address
+
     def _contract_function(con_func,args,try_time=3,error_meesage="func error"):
         for i in range(try_time):
             nbzz_conract_check.check_semaphore.acquire()
             try:
-                res=con_func(*args)
+                res=con_func(**args)
                 return res
-            except:
-                pass        
-            finally:
-                nbzz_conract_check.check_semaphore.release()
+            except: pass        
+            finally: nbzz_conract_check.check_semaphore.release()
         print(error_meesage)
+
     def balanceOf(self):
         return self._contract_function(lambda ad :self.nbzz_contract.functions.balanceOf(ad).call() , (self.address,),error_meesage="获取nbzz余额失败")
 
