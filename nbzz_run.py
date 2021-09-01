@@ -38,7 +38,7 @@ except:
     exit(1)
 #print=new_print
 class nbzz_conract_check:
-    check_semaphore=threading.Semaphore(10)
+    check_semaphore=threading.Semaphore(5)
     def __init__(self,contract,address):
         self.nbzz_contract = contract
         self.address=address
@@ -173,7 +173,12 @@ nbzz_contract = w3.eth.contract(address=config["network_overrides"]["constants"]
 
 #开始部署
 all_bee_path=[i for i in bee_install_path.glob(".bee*")]
+all_thread=[]
 for i_bee_path in tqdm(all_bee_path,ncols=80):
     ithread=threading.Thread(target=i_thread_nbzz,args=(i_bee_path,))
-    #ithread.setDaemon(True)
+    all_thread.append(ithread)
+    ithread.setDaemon(True)
     ithread.start()
+
+for ithread in all_thread:
+    ithread.join()
