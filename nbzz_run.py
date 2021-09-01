@@ -125,6 +125,7 @@ def i_thread_nbzz(ii_bee_path):
         except:
             tqdm.write(f"{ii_bee_path} 启动失败")
 
+
 run_semaphore = threading.Semaphore(1)
 # 初始化nbzz
 os.system("nbzz init")
