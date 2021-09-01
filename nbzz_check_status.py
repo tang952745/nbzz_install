@@ -28,7 +28,7 @@ class nbzz_conract_check:
                 try:
                     return con_func(*args)
                 except Exception as ex:
-                    print(ex)
+                    #print(ex)
                     pass
         print(error_meesage)
 
