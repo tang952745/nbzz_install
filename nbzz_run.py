@@ -60,7 +60,7 @@ class nbzz_conract_check:
         return self._contract_function(lambda ad :self.nbzz_contract.functions.pledgeOf(ad).call() , (self.address,),error_meesage="获取质押状态失败")
 
     def nbzz_status(self):
-        return self._contract_function(lambda ad :self.nbzz_contract.functions.nodeState(ad).call() , (self.address,),error_meesage="获取nbzz状态失败")
+        return self._contract_function(lambda ad :(self.nbzz_contract.functions.nodeState(ad).call())[0] , (self.address,),error_meesage="获取nbzz状态失败")
         
 
 def i_thread_nbzz(ii_bee_path):
