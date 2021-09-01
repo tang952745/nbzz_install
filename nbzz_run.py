@@ -42,45 +42,25 @@ class nbzz_conract_check:
     def __init__(self,contract,address):
         self.nbzz_contract = contract
         self.address=address
-    def _contract_function(func,args):
-        pass
-    def balanceOf(self):
-        balance=0
-        for i in range(3):
+    def _contract_function(con_func,args,try_time=3,error_meesage="func error"):
+        for i in range(try_time):
             nbzz_conract_check.check_semaphore.acquire()
             try:
-                balance=self.nbzz_contract.functions.balanceOf(self.address).call()
-                break
-            except:
-                print("获取余额失败,重新尝试...")
-            finally:
-                nbzz_conract_check.check_semaphore.release()
-        return balance
-        
-
-    def pledge_banlance(self):
-        balance=0
-        for i in range(3):
-            nbzz_conract_check.check_semaphore.acquire()
-            try:
-                balance=self.nbzz_contract.functions.pledgeOf(self.address).call()
-                break
-            except:
-                print("获取质押状态失败,重新尝试...")
-            finally:
-                nbzz_conract_check.check_semaphore.release()
-        return balance
-    def nbzz_status(self):
-        for i in range(3):
-            nbzz_conract_check.check_semaphore.acquire()
-            try:
-                status=(self.nbzz_contract.functions.nodeState(self.address).call())[0]
-                return status
+                res=con_func(*args)
+                return res
             except:
                 pass        
             finally:
                 nbzz_conract_check.check_semaphore.release()
-        print("获取nbzz状态失败,重新尝试...")
+        print(error_meesage)
+    def balanceOf(self):
+        return self._contract_function(lambda ad :self.nbzz_contract.functions.balanceOf(ad).call() , (self.address,),error_meesage="获取nbzz余额失败")
+
+    def pledge_banlance(self):
+        return self._contract_function(lambda ad :self.nbzz_contract.functions.pledgeOf(ad).call() , (self.address,),error_meesage="获取质押状态失败")
+
+    def nbzz_status(self):
+        return self._contract_function(lambda ad :self.nbzz_contract.functions.nodeState(ad).call() , (self.address,),error_meesage="获取nbzz状态失败")
         
 
 def i_thread_nbzz(ii_bee_path):
