@@ -16,23 +16,19 @@ except:
     exit(1)
 
 class nbzz_conract_check:
-    #check_semaphore = threading.Semaphore(10)
-    check_semaphore =threading.Lock()
+    check_semaphore = threading.Semaphore(10)
+
     def __init__(self, contract, address):
         self.nbzz_contract = contract
         self.address = address
 
     def _contract_function(self, con_func, args, try_time=3, error_meesage="func error"):
         for i in range(try_time):
-            #with nbzz_conract_check.check_semaphore:
-            nbzz_conract_check.check_semaphore.acquire(timeout=0.1)
-            try:
-                return con_func(*args)
-            except Exception as ex:
-                #print(ex)
-                pass
-            finally:
-                nbzz_conract_check.check_semaphore.release()
+            with nbzz_conract_check.check_semaphore:
+                try:
+                    return con_func(*args)
+                except Exception as ex:
+                    pass
         print(error_meesage)
 
     def balanceOf(self):
