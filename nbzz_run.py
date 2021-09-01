@@ -49,7 +49,7 @@ class nbzz_conract_check:
             nbzz_conract_check.check_semaphore.acquire()
             try:
                 balance=self.nbzz_contract.functions.balanceOf(self.address).call()
-                continue
+                break
             except:
                 print("获取余额失败,重新尝试...")
             finally:
@@ -63,7 +63,7 @@ class nbzz_conract_check:
             nbzz_conract_check.check_semaphore.acquire()
             try:
                 balance=self.nbzz_contract.functions.pledgeOf(self.address).call()
-                continue
+                break
             except:
                 print("获取质押状态失败,重新尝试...")
             finally:
@@ -75,6 +75,7 @@ class nbzz_conract_check:
             nbzz_conract_check.check_semaphore.acquire()
             try:
                 status=(self.nbzz_contract.functions.nodeState(self.address).call())[0]
+                break
             except:
                 print("获取nbzz状态失败,重新尝试...")
             finally:
@@ -86,7 +87,7 @@ def i_thread_nbzz(ii_bee_path):
     if not swarm_key.exists():
         tqdm.write(f"{ii_bee_path} 目录下不存在keys文件,检查是否安装")
         return 
-
+        
     geth_address=eth_keyfile.load_keyfile(str(swarm_key))["address"]
     geth_address=Web3.toChecksumAddress("0x"+geth_address)
 
