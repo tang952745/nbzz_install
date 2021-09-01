@@ -70,17 +70,17 @@ class nbzz_conract_check:
                 nbzz_conract_check.check_semaphore.release()
         return balance
     def nbzz_status(self):
-        status=False
         for i in range(3):
             nbzz_conract_check.check_semaphore.acquire()
             try:
                 status=(self.nbzz_contract.functions.nodeState(self.address).call())[0]
-                break
+                return status
             except:
-                print("获取nbzz状态失败,重新尝试...")
+                pass        
             finally:
                 nbzz_conract_check.check_semaphore.release()
-        return status
+        print("获取nbzz状态失败,重新尝试...")
+        
 
 def i_thread_nbzz(ii_bee_path):
     swarm_key=ii_bee_path/"keys"/"swarm.key"
