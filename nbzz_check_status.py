@@ -16,7 +16,7 @@ except:
     exit(1)
 
 class nbzz_conract_check:
-    check_semaphore = threading.Semaphore(2)
+    check_semaphore = threading.Semaphore(1)
     check_freq_lock=threading.Lock()
     def __init__(self, contract, address):
         self.nbzz_contract = contract
