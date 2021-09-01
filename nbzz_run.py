@@ -38,7 +38,7 @@ except:
     exit(1)
 
 class nbzz_conract_check:
-    check_semaphore=threading.Semaphore(5)
+    check_semaphore=threading.Semaphore(20)
 
     def __init__(self,contract,address):
         self.nbzz_contract = contract
