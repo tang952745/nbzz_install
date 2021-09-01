@@ -43,7 +43,7 @@ except:
 
 
 class nbzz_conract_check:
-    check_semaphore = threading.Semaphore(20)
+    check_lock = threading.Lock()
 
     def __init__(self, contract, address):
         self.nbzz_contract = contract
@@ -51,7 +51,7 @@ class nbzz_conract_check:
 
     def _contract_function(self, con_func, args, try_time=3, error_meesage="func error"):
         for i in range(try_time):
-            with nbzz_conract_check.check_semaphore:
+            with nbzz_conract_check.check_lock:
                 try:
                     return con_func(*args)
                 except:
@@ -100,7 +100,7 @@ def i_thread_nbzz(ii_bee_path):
     else:
         tqdm.write(f"install bee in {ii_bee_path}")
         if eth_stat.balanceOf() < 15:
-            with run_semaphore:
+            with nbzz_conract_check.check_lock:
                 try:
                     faucet(bee_passwd, str(swarm_key))
                 except:
@@ -109,14 +109,14 @@ def i_thread_nbzz(ii_bee_path):
 
         else:
             tqdm.write("nbzz余额充足")
-        with run_semaphore:
+        with nbzz_conract_check.check_lock:
             try:
                 pledge(15, bee_passwd, str(swarm_key))
             except:
                 tqdm.write(f"{ii_bee_path} 质押失败")
                 return
 
-    with run_semaphore:
+    with nbzz_conract_check.check_lock:
         try:
             os.system(
                 f"nbzz start -p {bee_passwd}  --bee-key-path {str(swarm_key)}")
@@ -125,8 +125,6 @@ def i_thread_nbzz(ii_bee_path):
         except:
             tqdm.write(f"{ii_bee_path} 启动失败")
 
-
-run_semaphore = threading.Semaphore(1)
 # 初始化nbzz
 os.system("nbzz init")
 
