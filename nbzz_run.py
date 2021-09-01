@@ -46,12 +46,11 @@ class nbzz_conract_check:
 
     def _contract_function(self,con_func,args,try_time=3,error_meesage="func error"):
         for i in range(try_time):
-            nbzz_conract_check.check_semaphore.acquire()
-            try:
-                res=con_func(*args)
-                return res
-            except: pass        
-            finally: nbzz_conract_check.check_semaphore.release()
+            with nbzz_conract_check.check_semaphore:
+                try:
+                    res=con_func(*args)
+                    return res
+                except: pass        
         print(error_meesage)
 
     def balanceOf(self):
