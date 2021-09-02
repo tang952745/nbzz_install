@@ -62,7 +62,7 @@ def nbzz_status_ithread(i_bee_path):
         geth_address = Web3.toChecksumAddress("0x"+geth_address)
 
         eth_stat=nbzz_conract_check(nbzz_contract,geth_address)
-        print(f"{i_bee_path} 0x{geth_address} {eth_stat.nbzz_status()}")
+        print(f"{i_bee_path} {geth_address} {eth_stat.nbzz_status()}")
     else:
         print(f"{i_bee_path} 目录下不存在keys文件,检查是否安装")
 
