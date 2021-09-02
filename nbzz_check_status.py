@@ -31,10 +31,10 @@ class nbzz_conract_check:
 
     def _contract_function(self, con_func, args, try_time=3, error_meesage="func error"):
         for i in range(try_time):
-            with nbzz_conract_check.check_lock:
-                #self.freq_lock_acquire()
                 try:
-                    return con_func(*args)
+                    with nbzz_conract_check.check_lock:
+                    #self.freq_lock_acquire()
+                        return con_func(*args)
                 except Exception as ex:
                     print(ex)
                     pass

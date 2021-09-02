@@ -51,9 +51,9 @@ class nbzz_conract_check:
 
     def _contract_function(self, con_func, args, try_time=3, error_meesage="func error"):
         for i in range(try_time):
-            with nbzz_conract_check.check_lock:
                 try:
-                    return con_func(*args)
+                    with nbzz_conract_check.check_lock:
+                        return con_func(*args)
                 except:
                     pass
         print(error_meesage)
@@ -91,35 +91,35 @@ def i_thread_nbzz(ii_bee_path):
 
     with nbzz_conract_check.check_lock:
         eth_balance = w3.eth.getBalance(geth_address)/1e18
-        if eth_balance < 0.002:
-            tqdm.write(
-                f"{ii_bee_path} {geth_address} geth不足,目前余额: {eth_balance:.4f}")
-            return
+    if eth_balance < 0.002:
+        tqdm.write(
+            f"{ii_bee_path} {geth_address} geth不足,目前余额: {eth_balance:.4f}")
+        return
 
     if eth_stat.pledge_banlance() >= 15:
         tqdm.write(f"{ii_bee_path} 已经完成质押")
     else:
         tqdm.write(f"install bee in {ii_bee_path}")
         if eth_stat.balanceOf() < 15:
-            with nbzz_conract_check.check_lock:
                 try:
-                    faucet(bee_passwd, str(swarm_key))
+                    with nbzz_conract_check.check_lock:
+                        faucet(bee_passwd, str(swarm_key))
                 except:
                     tqdm.write(f"{ii_bee_path} 打水失败")
                     return
 
         else:
             tqdm.write("nbzz余额充足")
-        with nbzz_conract_check.check_lock:
             try:
-                pledge(15, bee_passwd, str(swarm_key))
+                with nbzz_conract_check.check_lock:
+                    pledge(15, bee_passwd, str(swarm_key))
             except:
                 tqdm.write(f"{ii_bee_path} 质押失败")
                 return
 
-    with nbzz_conract_check.check_lock:
         try:
-            os.system(
+            with nbzz_conract_check.check_lock:
+                os.system(
                 f"nbzz start -p {bee_passwd}  --bee-key-path {str(swarm_key)}")
             tqdm.write("")
             # start_cmd(None,bee_passwd,str(swarm_key))
