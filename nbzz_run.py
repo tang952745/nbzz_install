@@ -84,17 +84,17 @@ def i_thread_nbzz(ii_bee_path):
     geth_address = Web3.toChecksumAddress("0x"+geth_address)
 
     eth_stat = nbzz_conract_check(nbzz_contract, geth_address)
-    with nbzz_conract_check.check_lock:
-        eth_balance = w3.eth.getBalance(geth_address)/1e18
-
-    if eth_balance < 0.002:
-        tqdm.write(
-            f"{ii_bee_path} {geth_address} geth不足,目前余额: {eth_balance:.4f}")
-        return
 
     if eth_stat.nbzz_status():
         tqdm.write(f"{ii_bee_path} 已经启动")
         return
+
+    with nbzz_conract_check.check_lock:
+        eth_balance = w3.eth.getBalance(geth_address)/1e18
+        if eth_balance < 0.002:
+            tqdm.write(
+                f"{ii_bee_path} {geth_address} geth不足,目前余额: {eth_balance:.4f}")
+            return
 
     if eth_stat.pledge_banlance() >= 15:
         tqdm.write(f"{ii_bee_path} 已经完成质押")
