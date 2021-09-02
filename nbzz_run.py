@@ -166,11 +166,11 @@ nbzz_contract = w3.eth.contract(
 all_bee_path = [i for i in bee_install_path.glob(".bee*")]
 all_bee_path.sort()
 all_thread = []
-for i_bee_path in tqdm(all_bee_path, ncols=80):
+for i_bee_path in all_bee_path:
     ithread = threading.Thread(target=i_thread_nbzz, args=(i_bee_path,))
     all_thread.append(ithread)
     ithread.setDaemon(True)
     ithread.start()
 
-for ithread in all_thread:
+for ithread in tqdm(all_thread):
     ithread.join()
