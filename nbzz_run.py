@@ -84,7 +84,8 @@ def i_thread_nbzz(ii_bee_path):
     geth_address = Web3.toChecksumAddress("0x"+geth_address)
 
     eth_stat = nbzz_conract_check(nbzz_contract, geth_address)
-    eth_balance = w3.eth.getBalance(geth_address)/1e18
+    with nbzz_conract_check.check_lock:
+        eth_balance = w3.eth.getBalance(geth_address)/1e18
 
     if eth_balance < 0.002:
         tqdm.write(
