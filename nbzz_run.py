@@ -136,7 +136,7 @@ os.system("nbzz init")
 env = os.environ
 if "NBZZ_RPC" in env:
     os.system(
-        f"sed -i \"/swap_endpoint:  /c\\swap_endpoint:  {env['NBZZ_RPC']} \"  /root/.nbzz/stagenet1/config/config.yaml")
+        f"sed -i \"/swap_endpoint:  /c\\swap_endpoint:  {env['NBZZ_RPC']} \"  /root/.nbzz/stagenet2/config/config.yaml")
 
 # 读取createbee配置
 bee_con_path = Path("config.yaml")
