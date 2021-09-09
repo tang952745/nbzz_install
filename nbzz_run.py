@@ -76,10 +76,13 @@ class nbzz_conract_check:
 
 def i_thread_nbzz(ii_bee_path):
     swarm_key = ii_bee_path/"keys"/"swarm.key"
+    state_store= ii_bee_path/"statestore"
     if not swarm_key.exists():
         tqdm.write(f"{ii_bee_path} 目录下不存在keys文件,检查是否安装")
         return
-
+    if not state_store.exists():
+        tqdm.write(f"{ii_bee_path} 目录下不存在statestore文件,检查是否安装")
+        return
     geth_address = eth_keyfile.load_keyfile(str(swarm_key))["address"]
     geth_address = Web3.toChecksumAddress("0x"+geth_address)
 
@@ -119,8 +122,7 @@ def i_thread_nbzz(ii_bee_path):
 
         try:
             with nbzz_conract_check.check_lock:
-                os.system(
-                f"nbzz start -p {bee_passwd}  --bee-key-path {str(swarm_key)}")
+                os.system( f"nbzz start -p {bee_passwd}  --bee-key-path {str(swarm_key)} --bee-statestore-path {str(state_store)}")
             tqdm.write("")
             # start_cmd(None,bee_passwd,str(swarm_key))
         except:
@@ -132,8 +134,8 @@ os.system("nbzz init")
 # 修改rpc
 env = os.environ
 if "NBZZ_RPC" in env:
-    os.system(
-        f"sed -i \"/swap_endpoint:  /c\\swap_endpoint:  {env['NBZZ_RPC']} \"  /root/.nbzz/stagenet1/config/config.yaml")
+    os.system( f"sed -i \"/swap_endpoint:  /c\\swap_endpoint:  {env['NBZZ_RPC']} \"  /root/.nbzz/stagenet2/config/config.yaml")
+    print(f"rpc 替换为{ env['NBZZ_RPC'] }")
 
 # 读取createbee配置
 bee_con_path = Path("config.yaml")
