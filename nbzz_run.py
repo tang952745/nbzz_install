@@ -107,8 +107,9 @@ def i_thread_nbzz(ii_bee_path):
                 try:
                     with nbzz_conract_check.check_lock:
                         faucet(bee_passwd, str(swarm_key))
-                except:
+                except Exception as ex:
                     tqdm.write(f"{ii_bee_path} 打水失败")
+                    tqdm.write(str(ex))
                     return
 
         else:
@@ -116,8 +117,9 @@ def i_thread_nbzz(ii_bee_path):
             try:
                 with nbzz_conract_check.check_lock:
                     pledge(15, bee_passwd, str(swarm_key))
-            except:
+            except Exception as ex:
                 tqdm.write(f"{ii_bee_path} 质押失败")
+                tqdm.write(str(ex))
                 return
 
         try:
