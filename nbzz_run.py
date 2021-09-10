@@ -122,13 +122,13 @@ def i_thread_nbzz(ii_bee_path):
                 tqdm.write(str(ex))
                 return
 
-        try:
-            with nbzz_conract_check.check_lock:
-                os.system( f"nbzz start -p {bee_passwd}  --bee-key-path {str(swarm_key)} --bee-statestore-path {str(state_store)}")
-            tqdm.write("")
-            # start_cmd(None,bee_passwd,str(swarm_key))
-        except:
-            tqdm.write(f"{ii_bee_path} 启动失败")
+    try:
+        with nbzz_conract_check.check_lock:
+            os.system( f"nbzz start -p {bee_passwd}  --bee-key-path {str(swarm_key)} --bee-statestore-path {str(state_store)}")
+        tqdm.write("")
+        # start_cmd(None,bee_passwd,str(swarm_key))
+    except:
+        tqdm.write(f"{ii_bee_path} 启动失败")
 
 # 初始化nbzz
 os.system("nbzz init")
