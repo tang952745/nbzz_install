@@ -62,7 +62,14 @@ def nbzz_status_ithread(i_bee_path):
         geth_address = Web3.toChecksumAddress("0x"+geth_address)
 
         eth_stat=nbzz_conract_check(nbzz_contract,geth_address)
-        print(f"{i_bee_path} {geth_address} {eth_stat.nbzz_status()}")
+        ready,online=eth_stat.nbzz_status()
+        if online:
+            stat_info="nbzz已经启动,正在挖矿中"
+        elif ready:
+            stat_info="nbzz已经启动,等待钓鱼节点确认后开始挖矿"
+        else:
+            stat_info="nbzz未启动"
+        print(f"{i_bee_path} {geth_address} {stat_info}")
     else:
         print(f"{i_bee_path} 目录下不存在keys文件,检查是否安装")
 
