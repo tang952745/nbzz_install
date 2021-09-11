@@ -16,18 +16,11 @@ except:
     exit(1)
 
 class nbzz_conract_check:
-    check_lock =threading.Semaphore(5) #threading.Lock()#
+    check_lock = threading.Lock()#threading.Semaphore(1)
     check_freq_lock=threading.Lock()
-    def __init__(self,swap_url,config, address):
-
-        if "http" ==swap_url[:4]:
-            self.w3=Web3(Web3.HTTPProvider(swap_url))
-        elif "ws" ==swap_url[:2]:
-            self.w3=Web3(Web3.WebsocketProvider(swap_url))
-
-        self.nbzz_contract = self.w3.eth.contract(address=config["network_overrides"]["constants"][config["selected_network"]]["CONTRACT"],abi=NBZZ_ABI)
+    def __init__(self, contract, address):
+        self.nbzz_contract = contract
         self.address = address
-
     def freq_lock_acquire(self):
         def release_lock(w_time):
             time.sleep(w_time)
@@ -68,7 +61,7 @@ def nbzz_status_ithread(i_bee_path):
         geth_address=eth_keyfile.load_keyfile(str(swarm_key))["address"]
         geth_address = Web3.toChecksumAddress("0x"+geth_address)
 
-        eth_stat=nbzz_conract_check(swap_url=swap_url,config=config,address=geth_address)
+        eth_stat=nbzz_conract_check(nbzz_contract,geth_address)
         ready,online=eth_stat.nbzz_status()
         if online:
             stat_info="nbzz已经启动,正在挖矿中"
@@ -97,7 +90,12 @@ if not bee_install_path.exists():
 config: Dict = load_config(DEFAULT_ROOT_PATH, "config.yaml")
 
 swap_url=config["swap_endpoint"]
+if "http" ==swap_url[:4]:
+    w3=Web3(Web3.HTTPProvider(swap_url))
+elif "ws" ==swap_url[:2]:
+    w3=Web3(Web3.WebsocketProvider(swap_url))
 
+nbzz_contract = w3.eth.contract(address=config["network_overrides"]["constants"][config["selected_network"]]["CONTRACT"],abi=NBZZ_ABI)
 
 
 all_bee_path=[i for i in bee_install_path.glob(".bee*")]
