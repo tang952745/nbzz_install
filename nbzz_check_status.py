@@ -18,6 +18,7 @@ except:
 class nbzz_conract_check:
     check_lock = threading.Lock()#threading.Semaphore(1)
     check_freq_lock=threading.Lock()
+    
     def __init__(self, contract, address):
         self.nbzz_contract = contract
         self.address = address
@@ -55,7 +56,7 @@ class nbzz_conract_check:
                                        (self.address,),
                                        error_meesage="获取nbzz状态失败")
 
-def nbzz_status_ithread(i_bee_path):
+def nbzz_status_ithread(i_bee_path,status_dict,status_lock):
     swarm_key=i_bee_path/"keys"/"swarm.key"
     if swarm_key.exists():
         geth_address=eth_keyfile.load_keyfile(str(swarm_key))["address"]
@@ -65,7 +66,13 @@ def nbzz_status_ithread(i_bee_path):
         ready,online=eth_stat.nbzz_status()
         if online:
             stat_info="nbzz已经启动,正在挖矿中"
+            with status_lock:
+                status_dict["not_initiated"]-=1
+                status_dict["running"]+=1
         elif ready:
+            with status_lock:
+                status_dict["not_initiated"]-=1
+                status_dict["start_wait"]+=1
             stat_info="nbzz已经启动,等待钓鱼节点确认后开始挖矿"
         else:
             stat_info="nbzz未启动"
@@ -101,13 +108,16 @@ nbzz_contract = w3.eth.contract(address=config["network_overrides"]["constants"]
 all_bee_path=[i for i in bee_install_path.glob(".bee*")]
 all_bee_path.sort()
 all_thread = []
+status_dict={"running":0,"start_wait":0,"not_initiated":len(all_bee_path)}
+status_lock=threading.Lock()
+
 for i_bee_path in all_bee_path:
-    ithread = threading.Thread(target=nbzz_status_ithread, args=(i_bee_path,))
+    ithread = threading.Thread(target=nbzz_status_ithread, args=(i_bee_path,status_dict,status_lock))
     all_thread.append(ithread)
     ithread.setDaemon(True)
     ithread.start()
 
 for ithread in all_thread:
     ithread.join()
-
+print(f"挖矿中:{status_dict['running']},已启动等待钓鱼节点确认:{status_dict['start_wait']},未启动:{status_dict['not_initiated']}")
 
