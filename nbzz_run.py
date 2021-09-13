@@ -114,13 +114,14 @@ def i_thread_nbzz(ii_bee_path):
 
         else:
             tqdm.write("nbzz余额充足")
-            try:
-                with nbzz_conract_check.check_lock:
-                    pledge(15, bee_passwd, str(swarm_key))
-            except Exception as ex:
-                tqdm.write(f"{ii_bee_path} 质押失败")
-                tqdm.write(str(ex))
-                return
+            
+        try:
+            with nbzz_conract_check.check_lock:
+                pledge(15, bee_passwd, str(swarm_key))
+        except Exception as ex:
+            tqdm.write(f"{ii_bee_path} 质押失败")
+            tqdm.write(str(ex))
+            return
 
     try:
         with nbzz_conract_check.check_lock:
