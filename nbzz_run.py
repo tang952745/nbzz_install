@@ -28,15 +28,14 @@ def new_print(*args, **kwargs):
 inspect.builtins.print = new_print
 
 try:
-    from nbzz.cmds.pledge_funcs import faucet, pledge
+    from nbzz.cmds.pledge_funcs import add_pledge
     from nbzz.cmds.start import start_cmd
     from nbzz.util.config import load_config
     import eth_keyfile
     from web3 import Web3
     from typing import Dict
     from nbzz.util.default_root import DEFAULT_ROOT_PATH
-    from nbzz.util.nbzz_abi import NBZZ_ABI
-
+    from nbzz.rpc.xdai_rpc import connect_w3,get_model_contract,get_proxy_contract,get_glod_contract
 except:
     print("nbzz未安装,此脚本需要安装nbzz 然后 . ./activate")
     exit(1)
@@ -45,8 +44,10 @@ except:
 class nbzz_conract_check:
     check_lock = threading.Lock()
 
-    def __init__(self, contract, address):
-        self.nbzz_contract = contract
+    def __init__(self, model_contract,glod_contract,proxy_contract, address):
+        self.model_contract = model_contract
+        self.glod_contract = glod_contract
+        self.proxy_contract = proxy_contract
         self.address = address
 
     def _contract_function(self, con_func, args, try_time=3, error_meesage="func error"):
@@ -59,17 +60,17 @@ class nbzz_conract_check:
         print(error_meesage)
 
     def balanceOf(self):
-        return self._contract_function(lambda ad: self.nbzz_contract.functions.balanceOf(ad).call(),
+        return self._contract_function(lambda ad: self.proxy_contract.functions.balanceOf(ad).call()/1e18,
                                        (self.address,),
                                        error_meesage="获取nbzz余额失败")
 
     def pledge_banlance(self):
-        return self._contract_function(lambda ad: self.nbzz_contract.functions.pledgeOf(ad).call(),
+        return self._contract_function(lambda ad: self.glod_contract.functions.balancesPledge(ad).call()/1e18,
                                        (self.address,),
                                        error_meesage="获取质押状态失败")
 
     def nbzz_status(self):
-        return self._contract_function(lambda ad: (self.nbzz_contract.functions.nodeState(ad).call())[0],
+        return self._contract_function(lambda ad: (self.model_contract.functions.nodeState(ad).call())[0],
                                        (self.address,),
                                        error_meesage="获取nbzz状态失败")
 
@@ -83,20 +84,20 @@ def i_thread_nbzz(ii_bee_path):
     if not state_store.exists():
         tqdm.write(f"{ii_bee_path} 目录下不存在statestore文件,检查是否安装")
         return
-    geth_address = eth_keyfile.load_keyfile(str(swarm_key))["address"]
-    geth_address = Web3.toChecksumAddress("0x"+geth_address)
+    xdai_address = eth_keyfile.load_keyfile(str(swarm_key))["address"]
+    xdai_address = Web3.toChecksumAddress("0x"+xdai_address)
 
-    eth_stat = nbzz_conract_check(nbzz_contract, geth_address)
+    eth_stat = nbzz_conract_check(model_contract,glod_contract,proxy_contract, xdai_address)
 
     if eth_stat.nbzz_status():
         tqdm.write(f"{ii_bee_path} 已经启动")
         return
 
     with nbzz_conract_check.check_lock:
-        eth_balance = w3.eth.getBalance(geth_address)/1e18
+        eth_balance = w3.eth.getBalance(xdai_address)/1e18
     if eth_balance < 0.002:
         tqdm.write(
-            f"{ii_bee_path} {geth_address} geth不足,目前余额: {eth_balance:.4f}")
+            f"{ii_bee_path} {xdai_address} xdai不足,目前余额: {eth_balance:.4f}")
         return
 
     if eth_stat.pledge_banlance() >= 15:
@@ -104,20 +105,14 @@ def i_thread_nbzz(ii_bee_path):
     else:
         tqdm.write(f"install bee in {ii_bee_path}")
         if eth_stat.balanceOf() < 15:
-                try:
-                    with nbzz_conract_check.check_lock:
-                        faucet(bee_passwd, str(swarm_key))
-                except Exception as ex:
-                    tqdm.write(f"{ii_bee_path} 打水失败")
-                    tqdm.write(str(ex))
+                    tqdm.write(f"{ii_bee_path} 余额小于15 nbzz, 无法质押")
                     return
-
         else:
             tqdm.write("nbzz余额充足")
             
         try:
             with nbzz_conract_check.check_lock:
-                pledge(15, bee_passwd, str(swarm_key))
+                add_pledge(15, bee_passwd, str(swarm_key))
         except Exception as ex:
             tqdm.write(f"{ii_bee_path} 质押失败")
             tqdm.write(str(ex))
@@ -158,15 +153,10 @@ if not bee_install_path.exists():
 # 读取合约
 config: Dict = load_config(DEFAULT_ROOT_PATH, "config.yaml")
 
-swap_url = config["swap_endpoint"]
-if "http" == swap_url[:4]:
-    w3 = Web3(Web3.HTTPProvider(swap_url))
-elif "ws" == swap_url[:2]:
-    w3 = Web3(Web3.WebsocketProvider(swap_url))
-
-nbzz_contract = w3.eth.contract(
-    address=config["network_overrides"]["constants"][config["selected_network"]]["CONTRACT"], abi=NBZZ_ABI)
-
+w3=connect_w3(config["swap_endpoint"])
+model_contract = get_model_contract(w3)
+proxy_contract=get_proxy_contract(w3)
+glod_contract=get_glod_contract(w3)
 # 开始部署
 all_bee_path = [i for i in bee_install_path.glob(".bee*")]
 all_bee_path.sort()
