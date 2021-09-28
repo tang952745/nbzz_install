@@ -55,7 +55,6 @@ def nbzz_status_ithread(i_bee_path,status_dict,status_lock):
         xdai_address = Web3.toChecksumAddress("0x"+xdai_address)
 
         eth_stat=nbzz_conract_check(model_contract,glod_contract,proxy_contract, xdai_address)
-        print(eth_stat.nbzz_status())
         ready,online=eth_stat.nbzz_status()
         if online:
             stat_info="nbzz已经启动,正在挖矿中"
