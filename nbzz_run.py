@@ -105,8 +105,9 @@ def i_thread_nbzz(ii_bee_path):
     else:
         tqdm.write(f"{ii_bee_path} 已经质押 {pledge_num}")
         tqdm.write(f"install bee in {ii_bee_path}")
-        if eth_stat.balanceOf() < 15-pledge_num:
-                    tqdm.write(f"{ii_bee_path} 余额小于{15-pledge_num} nbzz, 无法质押")
+        nbzz_balance=eth_stat.balanceOf()
+        if nbzz_balance < 15-pledge_num:
+                    tqdm.write(f"{ii_bee_path} 余额{nbzz_balance}小于{15-pledge_num} nbzz, 无法质押")
                     return
         else:
             tqdm.write("nbzz余额充足")
