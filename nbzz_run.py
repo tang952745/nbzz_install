@@ -134,7 +134,7 @@ os.system("nbzz init")
 # 修改rpc
 env = os.environ
 if "NBZZ_RPC" in env:
-    os.system( f"sed -i \"/swap_endpoint:  /c\\swap_endpoint:  {env['NBZZ_RPC']} \"  /root/.nbzz/stagenet2/config/config.yaml")
+    os.system( f"sed -i \"/swap_endpoint:  /c\\swap_endpoint:  {env['NBZZ_RPC']} \"  /root/.nbzz/mainnet/config/config.yaml")
     print(f"rpc 替换为{ env['NBZZ_RPC'] }")
 
 # 读取createbee配置
