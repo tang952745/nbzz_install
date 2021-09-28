@@ -44,7 +44,7 @@ class nbzz_conract_check:
                                        error_meesage="获取质押状态失败")
 
     def nbzz_status(self):
-        return self._contract_function(lambda ad: (self.model_contract.functions.nodeState(ad).call()),
+        return self._contract_function(lambda ad: (self.model_contract.functions.nodeState(ad).call())[:2],
                                        (self.address,),
                                        error_meesage="获取nbzz状态失败")
 
