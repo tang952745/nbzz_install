@@ -156,7 +156,7 @@ if not bee_install_path.exists():
 config: Dict = load_config(DEFAULT_ROOT_PATH, "config.yaml")
 
 w3=connect_w3(config["swap_endpoint"])
-model_contract = get_model_contract(w3)
+model_contract,_ = get_model_contract(w3)
 proxy_contract=get_proxy_contract(w3)
 glod_contract=get_glod_contract(w3)
 # 开始部署
