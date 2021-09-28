@@ -99,20 +99,21 @@ def i_thread_nbzz(ii_bee_path):
         tqdm.write(
             f"{ii_bee_path} {xdai_address} xdai不足,目前余额: {eth_balance:.4f}")
         return
-
-    if eth_stat.pledge_banlance() >= 15:
-        tqdm.write(f"{ii_bee_path} 已经完成质押")
+    pledge_num=eth_stat.pledge_banlance()
+    if pledge_num >= 15:
+        tqdm.write(f"{ii_bee_path} 已经完成质押 {pledge_num}")
     else:
+        tqdm.write(f"{ii_bee_path} 已经质押 {pledge_num}")
         tqdm.write(f"install bee in {ii_bee_path}")
-        if eth_stat.balanceOf() < 15:
-                    tqdm.write(f"{ii_bee_path} 余额小于15 nbzz, 无法质押")
+        if eth_stat.balanceOf() < 15-pledge_num:
+                    tqdm.write(f"{ii_bee_path} 余额小于{15-pledge_num} nbzz, 无法质押")
                     return
         else:
             tqdm.write("nbzz余额充足")
             
         try:
             with nbzz_conract_check.check_lock:
-                add_pledge(15, bee_passwd, str(swarm_key))
+                add_pledge(15-pledge_num, bee_passwd, str(swarm_key))
         except Exception as ex:
             tqdm.write(f"{ii_bee_path} 质押失败")
             tqdm.write(str(ex))
