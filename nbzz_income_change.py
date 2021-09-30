@@ -34,7 +34,7 @@ def i_thread_nbzz(ii_bee_path):
 
         result=subprocess.run(f"nbzz alias show --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
         income_address=(result.stdout.decode().strip("\n")).split(" ")
-        tqdm.write(income_address)
+        tqdm.write(str(income_address))
 
         #income_address=
 
