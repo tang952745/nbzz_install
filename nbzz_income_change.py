@@ -30,14 +30,14 @@ def i_thread_nbzz(ii_bee_path):
     with se_lock:
         result=subprocess.run(f"nbzz alias show --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
     now_income_address=(((result.stdout.decode().strip("\n")).split(" "))[2]).strip(",")
-    tqdm.write(str(now_income_address))
+    #tqdm.write(str(now_income_address))
     now_income_address=Web3.toChecksumAddress(now_income_address)
     if now_income_address == income_address:
         print("已经设置成功 收益地址 ")
         return
     with se_lock:
         result=subprocess.run(f"nbzz alias set-address -p {bee_passwd} -a {income_address} --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
-    tqdm.write(result.stdout.decode())
+    tqdm.write(str(result.stdout.decode().split()))
 
 # 修改rpc
 env = os.environ
