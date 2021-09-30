@@ -37,6 +37,8 @@ env = os.environ
 
 if "NBZZ_INCOME" in env:
     income_address=env["NBZZ_INCOME"]
+    print(f"收益地址: {income_address}")
+    income_address=Web3.toChecksumAddress(income_address)
 else:
     print("未设置收益地址")
     exit(1)
