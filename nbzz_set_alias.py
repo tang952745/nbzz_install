@@ -53,7 +53,7 @@ def i_thread_nbzz(ii_bee_path):
 # 修改rpc
 env = os.environ
 
-if "NBZZ_INCOME" in env:
+if "NBZZ_ALIAS" in env:
     alias_for_use=env["NBZZ_ALIAS"]
     print(f"别名: {alias_for_use}")
 else:
