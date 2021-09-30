@@ -5,6 +5,8 @@ cd nbzz
 . ./activate
 
 cd ..
+echo $1
+export NBZZ_INCOME=$1
 if  [ $# == 0 ] ; then
 curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/master/nbzz_check_status.py | python3
 else
