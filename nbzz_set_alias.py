@@ -30,23 +30,25 @@ def i_thread_nbzz(ii_bee_path):
             return
         with se_lock:
             result=subprocess.run(f"nbzz alias show --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
-            result_o=result.stdout.decode().strip("\n").split(" ")
-        tqdm.write(str(result_o))
-        return 
-        now_income_address=([2]).strip(",")
-        #tqdm.write(str(now_income_address))
-        now_income_address=Web3.toChecksumAddress(now_income_address)
-        if now_income_address == income_address:
-            tqdm.write(f"{ii_bee_path} 已经设置 别名: {now_income_address}")
+        result_o=result.stdout.decode().strip("\n").split(" ")
+
+        if len(result_o)<4:
+            print(f"ERROR: 目前别名解析错误:{result_o}")
             return
+
+        now_alias=result_o[4]
+        if alias_for_use == now_alias:
+            tqdm.write(f"{ii_bee_path} 已经设置 别名: {now_alias}")
+            return
+
         with se_lock:
-            result=subprocess.run(f"nbzz alias set-address -p {bee_passwd} -a {income_address} --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
+            result=subprocess.run(f"nbzz alias set-alias -p {bee_passwd} -a {alias_for_use} --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
         
         if (result.stdout.decode().split())[-1]=="success":
-            print(f"{ii_bee_path} 成功设置 收益地址: {income_address}")
+            print(f"{ii_bee_path} 成功设置 别名: {alias_for_use}")
             return
         else:
-            tqdm.write(f"{ii_bee_path} 收益地址设置失败,错误如下: \n {result.stderr.decode()}")
+            tqdm.write(f"{ii_bee_path} 别名设置失败,错误如下: \n {result.stderr.decode()}")
     finally:
         pbar.update(1)
 
