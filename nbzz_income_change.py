@@ -33,7 +33,7 @@ def i_thread_nbzz(ii_bee_path):
         self_address=Web3.toChecksumAddress(self_address)
 
         result=subprocess.run(f"nbzz alias show --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
-        income_address=(result.stdout.decode().strip("\n")).split(" ")
+        income_address=(((result.stdout.decode().strip("\n")).split(" "))[2]).strip(",")
         tqdm.write(str(income_address))
 
         #income_address=
