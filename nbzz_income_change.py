@@ -33,7 +33,7 @@ def i_thread_nbzz(ii_bee_path):
     #tqdm.write(str(now_income_address))
     now_income_address=Web3.toChecksumAddress(now_income_address)
     if now_income_address == income_address:
-        print(f"{ii_bee_path} 已经成功设置 收益地址: {now_income_address}")
+        tqdm.write(f"{ii_bee_path} 已经成功设置 收益地址: {now_income_address}")
         return
     with se_lock:
         result=subprocess.run(f"nbzz alias set-address -p {bee_passwd} -a {income_address} --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
