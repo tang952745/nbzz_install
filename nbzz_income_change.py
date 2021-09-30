@@ -30,8 +30,13 @@ def i_thread_nbzz(ii_bee_path):
             return
         result=subprocess.run(f"nbzz wallet public --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
         self_address=result.stdout.decode().strip("\n")
-        print(self_address)
+        self_address=Web3.toChecksumAddress(self_address)
 
+        result=subprocess.run(f"nbzz alias show --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
+        income_address=(result.stdout.decode().strip("\n")).split(" ")
+        tqdm.write(income_address)
+
+        #income_address=
 
 # 修改rpc
 env = os.environ
