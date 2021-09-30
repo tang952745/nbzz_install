@@ -23,20 +23,21 @@ except:
     exit(1)
 se_lock=threading.Semaphore(10)
 def i_thread_nbzz(ii_bee_path):
+    swarm_key = ii_bee_path/"keys"/"swarm.key"
+    if not swarm_key.exists():
+        tqdm.write(f"{ii_bee_path} 目录下不存在keys文件,检查是否安装")
+        return
     with se_lock:
-        swarm_key = ii_bee_path/"keys"/"swarm.key"
-        if not swarm_key.exists():
-            tqdm.write(f"{ii_bee_path} 目录下不存在keys文件,检查是否安装")
-            return
-        result=subprocess.run(f"nbzz wallet public --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
-        self_address=result.stdout.decode().strip("\n")
-        self_address=Web3.toChecksumAddress(self_address)
-
         result=subprocess.run(f"nbzz alias show --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
-        income_address=(((result.stdout.decode().strip("\n")).split(" "))[2]).strip(",")
-        tqdm.write(str(income_address))
-
-        #income_address=
+    now_income_address=(((result.stdout.decode().strip("\n")).split(" "))[2]).strip(",")
+    tqdm.write(str(now_income_address))
+    now_income_address=Web3.toChecksumAddress(now_income_address)
+    if now_income_address == income_address:
+        print("已经设置成功 收益地址 ")
+        return
+    with se_lock:
+        result=subprocess.run(f"nbzz alias set-address -p {bee_passwd} -a {income_address} --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
+    tqdm.write(result.stdout.decode())
 
 # 修改rpc
 env = os.environ
