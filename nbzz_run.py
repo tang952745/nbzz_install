@@ -76,57 +76,60 @@ class nbzz_conract_check:
 
 
 def i_thread_nbzz(ii_bee_path):
-    swarm_key = ii_bee_path/"keys"/"swarm.key"
-    state_store= ii_bee_path/"statestore"
-    if not swarm_key.exists():
-        tqdm.write(f"{ii_bee_path} 目录下不存在keys文件,检查是否安装")
-        return
-    if not state_store.exists():
-        tqdm.write(f"{ii_bee_path} 目录下不存在statestore文件,检查是否安装")
-        return
-    xdai_address = eth_keyfile.load_keyfile(str(swarm_key))["address"]
-    xdai_address = Web3.toChecksumAddress("0x"+xdai_address)
+    try:
+        swarm_key = ii_bee_path/"keys"/"swarm.key"
+        state_store= ii_bee_path/"statestore"
+        if not swarm_key.exists():
+            tqdm.write(f"{ii_bee_path} 目录下不存在keys文件,检查是否安装")
+            return
+        if not state_store.exists():
+            tqdm.write(f"{ii_bee_path} 目录下不存在statestore文件,检查是否安装")
+            return
+        xdai_address = eth_keyfile.load_keyfile(str(swarm_key))["address"]
+        xdai_address = Web3.toChecksumAddress("0x"+xdai_address)
 
-    eth_stat = nbzz_conract_check(model_contract,glod_contract,proxy_contract, xdai_address)
+        eth_stat = nbzz_conract_check(model_contract,glod_contract,proxy_contract, xdai_address)
 
-    if eth_stat.nbzz_status():
-        tqdm.write(f"{ii_bee_path} 已经启动")
-        return
-
-    with nbzz_conract_check.check_lock:
-        eth_balance = w3.eth.getBalance(xdai_address)/1e18
-    if eth_balance < 0.002:
-        tqdm.write(
-            f"{ii_bee_path} {xdai_address} xdai不足,目前余额: {eth_balance:.4f}")
-        return
-    pledge_num=eth_stat.pledge_banlance()
-    if pledge_num >= 15:
-        tqdm.write(f"{ii_bee_path} 已经完成质押 {pledge_num}")
-    else:
-        tqdm.write(f"{ii_bee_path} 已经质押 {pledge_num}")
-        tqdm.write(f"install bee in {ii_bee_path}")
-        nbzz_balance=eth_stat.balanceOf()
-        if nbzz_balance < 15-pledge_num:
-                    tqdm.write(f"{ii_bee_path} 余额{nbzz_balance}小于{15-pledge_num} nbzz, 无法质押")
-                    return
-        else:
-            tqdm.write("nbzz余额充足")
-            
-        try:
-            with nbzz_conract_check.check_lock:
-                add_pledge(15-pledge_num, bee_passwd, str(swarm_key))
-        except Exception as ex:
-            tqdm.write(f"{ii_bee_path} 质押失败")
-            tqdm.write(str(ex))
+        if eth_stat.nbzz_status():
+            tqdm.write(f"{ii_bee_path} 已经启动")
             return
 
-    try:
         with nbzz_conract_check.check_lock:
-            os.system( f"nbzz start -p {bee_passwd}  --bee-key-path {str(swarm_key)} --bee-statestore-path {str(state_store)}")
-        tqdm.write("")
-        # start_cmd(None,bee_passwd,str(swarm_key))
-    except:
-        tqdm.write(f"{ii_bee_path} 启动失败")
+            eth_balance = w3.eth.getBalance(xdai_address)/1e18
+        if eth_balance < 0.002:
+            tqdm.write(
+                f"{ii_bee_path} {xdai_address} xdai不足,目前余额: {eth_balance:.4f}")
+            return
+        pledge_num=eth_stat.pledge_banlance()
+        if pledge_num >= 15:
+            tqdm.write(f"{ii_bee_path} 已经完成质押 {pledge_num}")
+        else:
+            tqdm.write(f"{ii_bee_path} 已经质押 {pledge_num}")
+            tqdm.write(f"install bee in {ii_bee_path}")
+            nbzz_balance=eth_stat.balanceOf()
+            if nbzz_balance < 15-pledge_num:
+                        tqdm.write(f"{ii_bee_path} 余额{nbzz_balance}小于{15-pledge_num} nbzz, 无法质押")
+                        return
+            else:
+                tqdm.write("nbzz余额充足")
+                
+            try:
+                with nbzz_conract_check.check_lock:
+                    add_pledge(15-pledge_num, bee_passwd, str(swarm_key))
+            except Exception as ex:
+                tqdm.write(f"{ii_bee_path} 质押失败")
+                tqdm.write(str(ex))
+                return
+
+        try:
+            with nbzz_conract_check.check_lock:
+                os.system( f"nbzz start -p {bee_passwd}  --bee-key-path {str(swarm_key)} --bee-statestore-path {str(state_store)}")
+            tqdm.write("")
+            # start_cmd(None,bee_passwd,str(swarm_key))
+        except:
+            tqdm.write(f"{ii_bee_path} 启动失败")
+    finally:
+        pbar.update(1)
 
 # 初始化nbzz
 os.system("nbzz init")
@@ -163,11 +166,12 @@ glod_contract=get_glod_contract(w3)
 all_bee_path = [i for i in bee_install_path.glob(".bee*")]
 all_bee_path.sort()
 all_thread = []
+pbar=tqdm(total=len(all_bee_path))
 for i_bee_path in all_bee_path:
     ithread = threading.Thread(target=i_thread_nbzz, args=(i_bee_path,))
     all_thread.append(ithread)
     ithread.setDaemon(True)
     ithread.start()
 
-for ithread in tqdm(all_thread):
+for ithread in all_thread:
     ithread.join()
