@@ -30,7 +30,13 @@ def i_thread_nbzz(ii_bee_path):
             return
         with se_lock:
             result=subprocess.run(f"nbzz alias show --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
-        now_income_address=(((result.stdout.decode().strip("\n")).split(" "))[2]).strip(",")
+        result_o=result.stdout.decode().strip("\n").split(" ")
+        if len(result_o)<4:
+            print(f"ERROR: 目前状态解析错误:{result_o}")
+            return
+        now_income_address=(result_o[2]).strip(",")
+
+
         #tqdm.write(str(now_income_address))
         now_income_address=Web3.toChecksumAddress(now_income_address)
         if now_income_address == income_address:

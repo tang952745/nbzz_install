@@ -33,7 +33,7 @@ def i_thread_nbzz(ii_bee_path):
         result_o=result.stdout.decode().strip("\n").split(" ")
 
         if len(result_o)<4:
-            print(f"ERROR: 目前别名解析错误:{result_o}")
+            print(f"ERROR: 目前状态解析错误:{result_o}")
             return
 
         now_alias=result_o[4]
