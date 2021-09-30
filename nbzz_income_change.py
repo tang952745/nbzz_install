@@ -38,7 +38,7 @@ def i_thread_nbzz(ii_bee_path):
     with se_lock:
         result=subprocess.run(f"nbzz alias set-address -p {bee_passwd} -a {income_address} --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
     
-    if result.stdout.decode().split()[-1]=="success":
+    if (result.stdout.decode().split())[-1]=="success":
         print(f"{ii_bee_path} 已经设置 收益地址: {now_income_address}")
         return
     else:
