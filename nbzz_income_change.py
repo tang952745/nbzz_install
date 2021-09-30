@@ -33,11 +33,17 @@ def i_thread_nbzz(ii_bee_path):
     #tqdm.write(str(now_income_address))
     now_income_address=Web3.toChecksumAddress(now_income_address)
     if now_income_address == income_address:
-        print("已经设置成功 收益地址 ")
+        print(f"{ii_bee_path} 已经成功设置 收益地址: {now_income_address}")
         return
     with se_lock:
         result=subprocess.run(f"nbzz alias set-address -p {bee_passwd} -a {income_address} --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
-    tqdm.write(str(result.stdout.decode().split()))
+    
+    if result.stdout.decode().split()[-1]=="success":
+        print(f"{ii_bee_path} 已经设置 收益地址: {now_income_address}")
+        return
+    else:
+        tqdm.write(f"{ii_bee_path} 收益地址设置失败,错误如下: {result.stderr.decode()}")
+    
 
 # 修改rpc
 env = os.environ
