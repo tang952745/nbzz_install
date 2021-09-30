@@ -37,13 +37,13 @@ def i_thread_nbzz(ii_bee_path):
         #tqdm.write(str(now_income_address))
         now_income_address=Web3.toChecksumAddress(now_income_address)
         if now_income_address == income_address:
-            tqdm.write(f"{ii_bee_path} 已经成功设置 收益地址: {now_income_address}")
+            tqdm.write(f"{ii_bee_path} 已经设置 别名: {now_income_address}")
             return
         with se_lock:
             result=subprocess.run(f"nbzz alias set-address -p {bee_passwd} -a {income_address} --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
         
         if (result.stdout.decode().split())[-1]=="success":
-            print(f"{ii_bee_path} 已经设置 收益地址: {income_address}")
+            print(f"{ii_bee_path} 成功设置 收益地址: {income_address}")
             return
         else:
             tqdm.write(f"{ii_bee_path} 收益地址设置失败,错误如下: \n {result.stderr.decode()}")
@@ -54,11 +54,10 @@ def i_thread_nbzz(ii_bee_path):
 env = os.environ
 
 if "NBZZ_INCOME" in env:
-    income_address=env["NBZZ_INCOME"]
-    print(f"收益地址: {income_address}")
-    income_address=Web3.toChecksumAddress(income_address)
+    alias_for_use=env["NBZZ_ALIAS"]
+    print(f"别名: {alias_for_use}")
 else:
-    print("未设置收益地址")
+    print("未设置别名")
     exit(1)
 
 # 读取createbee配置
