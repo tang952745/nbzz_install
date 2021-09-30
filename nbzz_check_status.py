@@ -1,9 +1,6 @@
-import inspect
 import yaml
 from pathlib import Path
 import threading
-import os
-import time
 try:
     from nbzz.util.config import load_config
     import eth_keyfile
