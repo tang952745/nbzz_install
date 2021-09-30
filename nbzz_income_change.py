@@ -29,7 +29,7 @@ def i_thread_nbzz(ii_bee_path):
             tqdm.write(f"{ii_bee_path} 目录下不存在keys文件,检查是否安装")
             return
         result=subprocess.run(f"nbzz wallet public --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
-        self_address=result.stdout
+        self_address=result.stdout.decode().strip("\n")
         print(self_address)
 
 
