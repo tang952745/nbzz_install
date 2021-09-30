@@ -23,27 +23,29 @@ except:
     exit(1)
 se_lock=threading.Semaphore(10)
 def i_thread_nbzz(ii_bee_path):
-    swarm_key = ii_bee_path/"keys"/"swarm.key"
-    if not swarm_key.exists():
-        tqdm.write(f"{ii_bee_path} 目录下不存在keys文件,检查是否安装")
-        return
-    with se_lock:
-        result=subprocess.run(f"nbzz alias show --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
-    now_income_address=(((result.stdout.decode().strip("\n")).split(" "))[2]).strip(",")
-    #tqdm.write(str(now_income_address))
-    now_income_address=Web3.toChecksumAddress(now_income_address)
-    if now_income_address == income_address:
-        tqdm.write(f"{ii_bee_path} 已经成功设置 收益地址: {now_income_address}")
-        return
-    with se_lock:
-        result=subprocess.run(f"nbzz alias set-address -p {bee_passwd} -a {income_address} --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
-    
-    if (result.stdout.decode().split())[-1]=="success":
-        print(f"{ii_bee_path} 已经设置 收益地址: {income_address}")
-        return
-    else:
-        tqdm.write(f"{ii_bee_path} 收益地址设置失败,错误如下: \n {result.stderr.decode()}")
-    
+    try:
+        swarm_key = ii_bee_path/"keys"/"swarm.key"
+        if not swarm_key.exists():
+            tqdm.write(f"{ii_bee_path} 目录下不存在keys文件,检查是否安装")
+            return
+        with se_lock:
+            result=subprocess.run(f"nbzz alias show --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
+        now_income_address=(((result.stdout.decode().strip("\n")).split(" "))[2]).strip(",")
+        #tqdm.write(str(now_income_address))
+        now_income_address=Web3.toChecksumAddress(now_income_address)
+        if now_income_address == income_address:
+            tqdm.write(f"{ii_bee_path} 已经成功设置 收益地址: {now_income_address}")
+            return
+        with se_lock:
+            result=subprocess.run(f"nbzz alias set-address -p {bee_passwd} -a {income_address} --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
+        
+        if (result.stdout.decode().split())[-1]=="success":
+            print(f"{ii_bee_path} 已经设置 收益地址: {income_address}")
+            return
+        else:
+            tqdm.write(f"{ii_bee_path} 收益地址设置失败,错误如下: \n {result.stderr.decode()}")
+    finally:
+        pbar.update(1)
 
 # 修改rpc
 env = os.environ
@@ -75,13 +77,14 @@ if not bee_install_path.exists():
 all_bee_path = [i for i in bee_install_path.glob(".bee*")]
 all_bee_path.sort()
 all_thread = []
+pbar=tqdm(total=len(all_bee_path))
 for i_bee_path in all_bee_path:
     ithread = threading.Thread(target=i_thread_nbzz, args=(i_bee_path,))
     all_thread.append(ithread)
     ithread.setDaemon(True)
     ithread.start()
 
-for ithread in tqdm(all_thread):
+for ithread in all_thread:
     ithread.join()
 
 
