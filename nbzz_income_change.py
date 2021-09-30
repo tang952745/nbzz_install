@@ -21,15 +21,16 @@ try:
 except:
     print("nbzz未安装,此脚本需要安装nbzz 然后 . ./activate")
     exit(1)
-
+se_lock=threading.Semaphore(10)
 def i_thread_nbzz(ii_bee_path):
-    swarm_key = ii_bee_path/"keys"/"swarm.key"
-    if not swarm_key.exists():
-        tqdm.write(f"{ii_bee_path} 目录下不存在keys文件,检查是否安装")
-        return
-    result=subprocess.run(f"nbzz wallet public --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    self_address=result.stdout
-    print(self_address)
+    with se_lock:
+        swarm_key = ii_bee_path/"keys"/"swarm.key"
+        if not swarm_key.exists():
+            tqdm.write(f"{ii_bee_path} 目录下不存在keys文件,检查是否安装")
+            return
+        result=subprocess.run(f"nbzz wallet public --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        self_address=result.stdout
+        print(self_address)
 
 
 # 修改rpc

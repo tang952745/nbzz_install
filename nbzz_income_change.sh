@@ -6,7 +6,7 @@ cd nbzz
 
 cd ..
 
-echo $1
+#echo $1
 export NBZZ_INCOME=$1
 
 if  [ $# == 1 ] ; then
