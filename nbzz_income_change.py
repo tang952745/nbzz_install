@@ -39,10 +39,10 @@ def i_thread_nbzz(ii_bee_path):
         result=subprocess.run(f"nbzz alias set-address -p {bee_passwd} -a {income_address} --bee-key-path {str(swarm_key)} ", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
     
     if (result.stdout.decode().split())[-1]=="success":
-        print(f"{ii_bee_path} 已经设置 收益地址: {now_income_address}")
+        print(f"{ii_bee_path} 已经设置 收益地址: {income_address}")
         return
     else:
-        tqdm.write(f"{ii_bee_path} 收益地址设置失败,错误如下: {result.stderr.decode()}")
+        tqdm.write(f"{ii_bee_path} 收益地址设置失败,错误如下: \n {result.stderr.decode()}")
     
 
 # 修改rpc
