@@ -1,6 +1,7 @@
 import yaml
 from pathlib import Path
 import threading
+import os
 try:
     from nbzz.util.config import load_config
     import eth_keyfile
@@ -8,11 +9,18 @@ try:
     from typing import Dict
     from nbzz.util.default_root import DEFAULT_ROOT_PATH
     from nbzz.rpc.xdai_rpc import connect_w3,get_model_contract,get_proxy_contract,get_glod_contract
-    import leveldb
 except:
     print("nbzz未安装,此脚本需要安装nbzz 然后 . ./activate")
     exit(1)
-
+try:
+    import plyvel
+except:
+    try:
+        os.system('pip3 install plyvel')
+    except:
+        print("plyvel install error ")
+        exit(1)
+    import plyvel
 class nbzz_conract_check:
     check_lock = threading.Lock()
 
@@ -58,8 +66,10 @@ def nbzz_status_ithread(i_bee_path,status_dict,status_lock):
 
         eth_stat=nbzz_conract_check(model_contract,glod_contract,proxy_contract, xdai_address)
         ready,online,_,set_overlay=eth_stat.nbzz_status()
-        db=leveldb.LevelDB(str(state_store))
-        overlay_address=db.Get(b"non-mineable-overlay").decode().strip('"')
+        db=plyvel.lDB(str(state_store))
+        print(overlay_address=db.get(b"non-mineable-overlay"))
+        overlay_address=db.get(b"non-mineable-overlay").decode().strip('"')
+        db.close()
         if online:
             stat_info="nbzz已经启动,正在挖矿中"
             with status_lock:
