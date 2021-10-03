@@ -1,7 +1,5 @@
 #curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/master/nbzz_install.sh | bash
 #curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/dev/nbzz_install.sh | bash -s dev 
-apt update -y
-apt upgrade -y
 
 # Install Git
 apt install git -y
