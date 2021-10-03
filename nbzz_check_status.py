@@ -57,7 +57,7 @@ def nbzz_status_ithread(i_bee_path,status_dict,status_lock):
         xdai_address = Web3.toChecksumAddress("0x"+xdai_address)
 
         eth_stat=nbzz_conract_check(model_contract,glod_contract,proxy_contract, xdai_address)
-        ready,online,set_overlay=eth_stat.nbzz_status()
+        ready,online,_,set_overlay=eth_stat.nbzz_status()
         db=leveldb.LevelDB(str(state_store))
         overlay_address=db.Get(b"non-mineable-overlay").decode().strip('"')
         if online:
