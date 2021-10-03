@@ -8,6 +8,7 @@ try:
     from typing import Dict
     from nbzz.util.default_root import DEFAULT_ROOT_PATH
     from nbzz.rpc.xdai_rpc import connect_w3,get_model_contract,get_proxy_contract,get_glod_contract
+    import leveldb
 except:
     print("nbzz未安装,此脚本需要安装nbzz 然后 . ./activate")
     exit(1)
@@ -41,24 +42,30 @@ class nbzz_conract_check:
                                        error_meesage="获取质押状态失败")
 
     def nbzz_status(self):
-        return self._contract_function(lambda ad: (self.model_contract.functions.nodeState(ad).call())[:2],
+        return self._contract_function(lambda ad: (self.model_contract.functions.nodeState(ad).call()),
                                        (self.address,),
                                        error_meesage="获取nbzz状态失败")
 
 def nbzz_status_ithread(i_bee_path,status_dict,status_lock):
     swarm_key=i_bee_path/"keys"/"swarm.key"
+    state_store= i_bee_path/"statestore"
+    if not state_store.exists():
+        print(f"{i_bee_path} 目录下不存在statestore文件,检查是否安装")
+        return
     if swarm_key.exists():
         xdai_address=eth_keyfile.load_keyfile(str(swarm_key))["address"]
         xdai_address = Web3.toChecksumAddress("0x"+xdai_address)
 
         eth_stat=nbzz_conract_check(model_contract,glod_contract,proxy_contract, xdai_address)
-        ready,online=eth_stat.nbzz_status()
+        ready,online,set_overlay=eth_stat.nbzz_status()
+        db=leveldb.LevelDB(str(state_store))
+        overlay_address=db.Get(b"non-mineable-overlay").decode().strip('"')
         if online:
             stat_info="nbzz已经启动,正在挖矿中"
             with status_lock:
                 status_dict["not_initiated"]-=1
                 status_dict["running"]+=1
-        elif ready:
+        elif ready and (set_overlay==overlay_address):
             with status_lock:
                 status_dict["not_initiated"]-=1
                 status_dict["start_wait"]+=1

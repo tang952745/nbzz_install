@@ -36,6 +36,7 @@ try:
     from typing import Dict
     from nbzz.util.default_root import DEFAULT_ROOT_PATH
     from nbzz.rpc.xdai_rpc import connect_w3,get_model_contract,get_proxy_contract,get_glod_contract
+    import leveldb
 except:
     print("nbzz未安装,此脚本需要安装nbzz 然后 . ./activate")
     exit(1)
@@ -70,7 +71,7 @@ class nbzz_conract_check:
                                        error_meesage="获取质押状态失败")
 
     def nbzz_status(self):
-        return self._contract_function(lambda ad: (self.model_contract.functions.nodeState(ad).call())[0],
+        return self._contract_function(lambda ad: (self.model_contract.functions.nodeState(ad).call()),
                                        (self.address,),
                                        error_meesage="获取nbzz状态失败")
 
@@ -85,12 +86,15 @@ def i_thread_nbzz(ii_bee_path):
         if not state_store.exists():
             tqdm.write(f"{ii_bee_path} 目录下不存在statestore文件,检查是否安装")
             return
+        db=leveldb.LevelDB(str(state_store))
+        overlay_address=db.Get(b"non-mineable-overlay").decode().strip('"')
         xdai_address = eth_keyfile.load_keyfile(str(swarm_key))["address"]
         xdai_address = Web3.toChecksumAddress("0x"+xdai_address)
 
         eth_stat = nbzz_conract_check(model_contract,glod_contract,proxy_contract, xdai_address)
 
-        if eth_stat.nbzz_status():
+        nbzz_status=eth_stat.nbzz_status()
+        if nbzz_status[0] and (nbzz_status[3]==overlay_address):
             tqdm.write(f"{ii_bee_path} 已经启动")
             return
 
