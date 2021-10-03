@@ -96,7 +96,11 @@ def i_thread_nbzz(ii_bee_path):
             tqdm.write(f"{ii_bee_path} 目录下不存在statestore文件,检查是否安装")
             return
         db=plyvel.DB(str(state_store))
-        overlay_address=db.get(b"non-mineable-overlay").decode().strip('"')
+        overlay_address=db.get(b"non-mineable-overlay")
+        if overlay_address is None:
+            print(f"{i_bee_path} bee 未部署支票簿,请检查bee运行状态") 
+            exit(1)
+        overlay_address=overlay_address.decode().strip('"')
         db.close()
         xdai_address = eth_keyfile.load_keyfile(str(swarm_key))["address"]
         xdai_address = Web3.toChecksumAddress("0x"+xdai_address)
