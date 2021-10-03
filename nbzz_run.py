@@ -12,6 +12,15 @@ except:
         print("tqdm install error ")
         exit(1)
     from tqdm import tqdm
+try:
+    import plyvel
+except:
+    try:
+        os.system('pip3 install plyvel')
+    except:
+        print("plyvel install error ")
+        exit(1)
+    import plyvel
 # store builtin print
 old_print = print
 
@@ -86,8 +95,9 @@ def i_thread_nbzz(ii_bee_path):
         if not state_store.exists():
             tqdm.write(f"{ii_bee_path} 目录下不存在statestore文件,检查是否安装")
             return
-        db=leveldb.LevelDB(str(state_store))
-        overlay_address=db.Get(b"non-mineable-overlay").decode().strip('"')
+        db=plyvel.DB(str(state_store))
+        overlay_address=db.get(b"non-mineable-overlay").decode().strip('"')
+        db.close()
         xdai_address = eth_keyfile.load_keyfile(str(swarm_key))["address"]
         xdai_address = Web3.toChecksumAddress("0x"+xdai_address)
 
