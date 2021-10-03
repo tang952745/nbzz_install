@@ -67,12 +67,14 @@ def nbzz_status_ithread(i_bee_path,status_dict,status_lock):
         eth_stat=nbzz_conract_check(model_contract,glod_contract,proxy_contract, xdai_address)
         ready,online,_,set_overlay=eth_stat.nbzz_status()
         db=plyvel.DB(str(state_store))
-        overlay_address=db.get(b"non-mineable-overlay")
-        if overlay_address is None:
-            print(f"{i_bee_path} bee 未部署支票簿,请检查bee运行状态") 
-            exit(1)
-        overlay_address=overlay_address.decode().strip('"')
-        db.close()
+        try:
+            overlay_address=db.get(b"non-mineable-overlay")
+            if overlay_address is None:
+                print(f"{i_bee_path} bee 未部署支票簿,请检查bee运行状态") 
+                exit(1)
+            overlay_address=overlay_address.decode().strip('"')
+        finally:
+            db.close()
         if online:
             stat_info="nbzz已经启动,正在挖矿中"
             with status_lock:
