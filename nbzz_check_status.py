@@ -61,6 +61,7 @@ def nbzz_status_ithread(i_bee_path,status_dict,status_lock):
         ready,online,_,set_overlay=eth_stat.nbzz_status()
         with statestore_dir(state_store) as statestoredb:
             overlay_address=statestoredb.get_overlay()
+        print(set_overlay,overlay_address)
         if online:
             stat_info="nbzz已经启动,正在挖矿中"
             with status_lock:
