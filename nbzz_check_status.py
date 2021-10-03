@@ -67,7 +67,7 @@ def nbzz_status_ithread(i_bee_path,status_dict,status_lock):
         eth_stat=nbzz_conract_check(model_contract,glod_contract,proxy_contract, xdai_address)
         ready,online,_,set_overlay=eth_stat.nbzz_status()
         db=plyvel.DB(str(state_store))
-        print(overlay_address=db.get(b"non-mineable-overlay"))
+        print(db.get(b"non-mineable-overlay"))
         overlay_address=db.get(b"non-mineable-overlay").decode().strip('"')
         db.close()
         if online:
