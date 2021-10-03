@@ -12,15 +12,7 @@ except:
         print("tqdm install error ")
         exit(1)
     from tqdm import tqdm
-try:
-    import plyvel
-except:
-    try:
-        os.system('pip3 install plyvel')
-    except:
-        print("plyvel install error ")
-        exit(1)
-    import plyvel
+    
 # store builtin print
 old_print = print
 
@@ -45,7 +37,7 @@ try:
     from typing import Dict
     from nbzz.util.default_root import DEFAULT_ROOT_PATH
     from nbzz.rpc.xdai_rpc import connect_w3,get_model_contract,get_proxy_contract,get_glod_contract
-    import leveldb
+    from nbzz.cmds.start import statestore_dir
 except:
     print("nbzz未安装,此脚本需要安装nbzz 然后 . ./activate")
     exit(1)
@@ -95,15 +87,10 @@ def i_thread_nbzz(ii_bee_path):
         if not state_store.exists():
             tqdm.write(f"{ii_bee_path} 目录下不存在statestore文件,检查是否安装")
             return
-        db=plyvel.DB(str(state_store))
-        try:
-            overlay_address=db.get(b"non-mineable-overlay")
-            if overlay_address is None:
-                print(f"{i_bee_path} bee 未部署支票簿,请检查bee运行状态") 
-                exit(1)
-            overlay_address=overlay_address.decode().strip('"')
-        finally:
-            db.close()
+
+        with statestore_dir(state_store) as statestoredb:
+            overlay_address=statestoredb.get_overlay()
+
         xdai_address = eth_keyfile.load_keyfile(str(swarm_key))["address"]
         xdai_address = Web3.toChecksumAddress("0x"+xdai_address)
 
