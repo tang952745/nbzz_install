@@ -59,6 +59,7 @@ def nbzz_status_ithread(i_bee_path,status_dict,status_lock):
 
         eth_stat=nbzz_conract_check(model_contract,glod_contract,proxy_contract, xdai_address)
         ready,online,_,set_overlay=eth_stat.nbzz_status()
+        set_overlay=set_overlay.hex()
         with statestore_dir(state_store) as statestoredb:
             overlay_address=statestoredb.get_overlay()
         print(set_overlay,overlay_address)
