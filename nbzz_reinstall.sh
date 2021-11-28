@@ -1,5 +1,5 @@
-#curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/master/nbzz_reinstall.sh | bash
-#curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/dev/nbzz_reinstall.sh | bash -s dev 
+#curl  -fsSL https://raw.githubusercontent.com/tang952745/nbzz_install/master/nbzz_reinstall.sh | bash
+#curl  -fsSL https://raw.githubusercontent.com/tang952745/nbzz_install/dev/nbzz_reinstall.sh | bash -s dev 
 apt install git -y
 
 rm -rf ./nbzz

@@ -1,5 +1,5 @@
-#curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/master/nbzz_install.sh | bash
-#curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/dev/nbzz_install.sh | bash -s dev 
+#curl  -fsSL https://raw.githubusercontent.com/tang952745/nbzz_install/master/nbzz_install.sh | bash
+#curl  -fsSL https://raw.githubusercontent.com/tang952745/nbzz_install/dev/nbzz_install.sh | bash -s dev 
 
 # Install Git
 apt install git -y
@@ -15,7 +15,7 @@ sh install.sh
 
 cd ..
 if  [ $# == 0 ] ; then
-curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/master/nbzz_run.py | python3
+curl  -fsSL https://raw.githubusercontent.com/tang952745/nbzz_install/master/nbzz_run.py | python3
 else
-curl  -fsSL https://gitee.com/tousang/nbzz_install/raw/dev/nbzz_run.py | python3
+curl  -fsSL https://raw.githubusercontent.com/tang952745/nbzz_install/dev/nbzz_run.py | python3
 fi
