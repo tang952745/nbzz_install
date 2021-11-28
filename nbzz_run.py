@@ -90,7 +90,7 @@ def i_thread_nbzz(ii_bee_path):
 
         with statestore_dir(state_store) as statestoredb:
             overlay_address=statestoredb.get_overlay()
-
+        overlay_address=overlay_address.hex()
         xdai_address = eth_keyfile.load_keyfile(str(swarm_key))["address"]
         xdai_address = Web3.toChecksumAddress("0x"+xdai_address)
 
