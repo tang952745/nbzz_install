@@ -90,14 +90,14 @@ def i_thread_nbzz(ii_bee_path):
 
         with statestore_dir(state_store) as statestoredb:
             overlay_address=statestoredb.get_overlay()
-        overlay_address=overlay_address.hex()
+        overlay_address=overlay_address
         xdai_address = eth_keyfile.load_keyfile(str(swarm_key))["address"]
         xdai_address = Web3.toChecksumAddress("0x"+xdai_address)
 
         eth_stat = nbzz_conract_check(model_contract,glod_contract,proxy_contract, xdai_address)
 
         nbzz_status=eth_stat.nbzz_status()
-        if nbzz_status[0] and (nbzz_status[3]==overlay_address):
+        if nbzz_status[0] and (nbzz_status[3].hex()==overlay_address):
             tqdm.write(f"{ii_bee_path} 已经启动")
             return
 
